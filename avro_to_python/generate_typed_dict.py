@@ -21,6 +21,7 @@ def optional_element(name, type):
 
 class GenerateTypedDict:
     def __init__(self, name):
+        self.name = name
         tree = ast.parse(base)
         self.dict = tree.body[0]
         self.dict.body = []
