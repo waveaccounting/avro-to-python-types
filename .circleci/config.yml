@@ -4,6 +4,14 @@ orbs:
   python: circleci/python@1.2.1
 
 jobs:
+  format:
+    executor: python/default
+    steps: 
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry    
+      - run: poetry run black . --check
+
   build-and-test:
     executor: python/default
     steps:
@@ -16,3 +24,4 @@ workflows:
   main:
     jobs:
       - build-and-test
+      - format
