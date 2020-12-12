@@ -2,8 +2,6 @@ import astor
 import ast
 
 base = """
-from typing import TypedDict
-
 class Example(TypedDict):
     foo: str
 """
@@ -24,10 +22,10 @@ def optional_element(name, type):
 class GenerateTypedDict:
     def __init__(self, name):
         tree = ast.parse(base)
-        self.dict = tree.body[1]
+        self.dict = tree.body[0]
         self.dict.body = []
         self.tree = tree
-        tree.body[1].name = name
+        tree.body[0].name = name
         self.tree = tree
 
     def dump(self):
