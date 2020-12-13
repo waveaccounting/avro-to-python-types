@@ -4,30 +4,6 @@ import ast
 import json
 import astor
 
-test_schema = json.loads(
-    """
-{"namespace": "example.avro",
- "type": "record",
- "name": "User",
- "fields": [
-     {"name": "name", "type": "string"},
-     {"name": "favorite_number",  "type": ["int", "null"]},
-     {"name": "favorite_color", "type": ["string", "null"]},
-     {"name": "address",
-        "type": {
-            "type" : "record",
-            "name" : "AddressUSRecord",
-            "fields" : [
-                {"name": "streetaddress", "type": "string"},
-                {"name": "city", "type": "string"}
-            ]
-        }
-    }
- ]
-}
-"""
-)
-
 
 def is_nullable(field):
     if isinstance(field["type"], list):
@@ -72,8 +48,8 @@ def type_for_schema(schema):
     return tree
 
 
-def typed_dict():
-    new_type = type_for_schema(test_schema)
-    imports = "from typing import TypedDict\n\n"
+def schema_to_typed_dict(test_schema):
+    new_type = type_for_schema(json.loads(test_schema))
+    imports = "from typing import TypedDict, Optional\n\n"
     types = astor.to_source(new_type)
-    print(imports + types)
+    return imports + types
