@@ -1,5 +1,5 @@
 import glob
-from avro_to_python import schema_to_typed_dict
+from avro_to_python_types import schema_to_typed_dict
 import snapshottest
 
 test_json_files = glob.glob("tests/test_cases/*.avsc")
