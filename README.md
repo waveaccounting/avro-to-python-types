@@ -1,6 +1,6 @@
 # avro-to-python-types
 
-This library converts avro schemas to JSON types.
+A library for converting avro schemas to python types.
 
 Currently, it supports converting `record`s to `TypedDict`. If you would like to see more features added, please open up an issue.
 
