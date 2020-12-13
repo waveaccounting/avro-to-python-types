@@ -5,7 +5,9 @@ orbs:
 
 jobs:
   format:
-    executor: python/default
+    executor:
+      name: python/default
+      tag: "3.9"
     steps: 
       - checkout
       - python/install-packages:
@@ -13,7 +15,9 @@ jobs:
       - run: poetry run black . --check
 
   build-and-test:
-    executor: python/default
+    executor:
+      name: python/default
+      tag: "3.9"
     steps:
       - checkout
       - python/install-packages:
