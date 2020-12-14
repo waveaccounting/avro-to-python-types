@@ -54,14 +54,14 @@ class AddressUSRecord(TypedDict):
     city: str
 
 
-class OtherThing(TypedDict):
+class NextOtherThing(TypedDict):
     thing1: str
     thing2: Optional[int]
 
 
 class OtherThing(TypedDict):
     thing1: str
-    other_thing: OtherThing
+    other_thing: NextOtherThing
 
 
 class User(TypedDict):
