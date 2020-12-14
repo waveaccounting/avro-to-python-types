@@ -10,16 +10,16 @@ This library is target to people writing code generation for python apps that ar
 
 ## Example usage
 
-```python
-from avro_to_python_types import schema_to_typed_dict
+If you are using Avro (with our without Schema Registry) you will want to to have some type safety when you messages are deserialized.
 
-with open(test_json_file) as f:
-    avro_schema = f.read()
-    output = schema_to_typed_dict(avro_schema)
-    print(output)
-```
+(This example project)[/examples/sync_types] shows how to keep a directory of Avro schemas in sync with a directory of python files exposing their types.
 
-The avro schema will produce the following python
+To try it out, simply clone this repo and run
+
+`poetry install`
+`poetry run sync-example`
+
+For example, this avro schema will produce the following python
 
 ```json
 {
