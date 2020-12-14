@@ -12,7 +12,7 @@ This library is target to people writing code generation for python apps that ar
 
 If you are using Avro (with our without Schema Registry) you will want to to have some type safety when you messages are deserialized.
 
-(This example project)[/examples/sync_types] shows how to keep a directory of Avro schemas in sync with a directory of python files exposing their types.
+[This example project](/examples/sync_types) shows how to keep a directory of Avro schemas in sync with a directory of python files exposing their types.
 
 To try it out, simply clone this repo and run
 
