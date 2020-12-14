@@ -52,7 +52,7 @@
                         "name": "other_thing",
                         "type": {
                             "type": "record",
-                            "name": "OtherThing",
+                            "name": "NextOtherThing",
                             "fields": [
                                 {
                                     "name": "thing1",
