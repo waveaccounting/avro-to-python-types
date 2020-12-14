@@ -17,6 +17,7 @@ If you are using Avro (with our without Schema Registry) you will want to to hav
 To try it out, simply clone this repo and run
 
 `poetry install`
+
 `poetry run sync-example`
 
 For example, this avro schema will produce the following python
