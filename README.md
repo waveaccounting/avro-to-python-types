@@ -6,13 +6,29 @@ Currently, it supports converting `record`s to `TypedDict`. If you would like to
 
 ## Why would I want this?
 
-This library is target to people writing code generation for python apps that are using avro.
+This library is targeted to people writing code generation for python apps that are using avro.
 
-## Example usage
+## Usage
 
-If you are using Avro (with our without Schema Registry) you will want to to have some type safety when you messages are deserialized.
+This library does one thing, it converts Avro schemas to python types.
 
-[This example project](/examples/sync_types) shows how to keep a directory of Avro schemas in sync with a directory of python files exposing their types.
+To get up and running quickly, you can use this to simply load schemas and print out the python
+code that is generated.
+
+```python
+import glob
+from avro_to_python_types import typed_dict_from_schema_file
+
+schema_files = glob.glob("schemas/*.avsc")
+
+for schema_file in schema_files:
+    types = typed_dict_from_schema_file(schema_file)
+    print(types)
+
+```
+
+For a real world example of syncing a directory of schemas into a directory of matching python typed dictionaries
+check out the example app [here](/examples/sync_types)
 
 To try it out, simply clone this repo and run
 
@@ -20,11 +36,25 @@ To try it out, simply clone this repo and run
 
 `poetry run sync-example`
 
-For example, this avro schema will produce the following python
+For some more advanced examples, like referencing other schema files by their full name take a look at the tests [here](/tests)
+
+### Referencing schemas
+
+This library supports referencing schemas in different files by their fullname.
+
+In order for this behaviour to work, all schemas must be in the same directory and use the following naming convention: `namespace.name.avsc`. Note that is the same as `fullname.avsc`
+
+For more on this checkout the docs for fastavro [here](https://fastavro.readthedocs.io/en/latest/schema.html#fastavro._schema_py.load_schema).
+
+An example of this can be found in the tests.
+
+## Example output
+
+The following example shows the type generated for a given schema.
 
 ```json
 {
-  "namespace": "example.avro",
+  "namespace": "example",
   "type": "record",
   "name": "User",
   "fields": [
@@ -60,17 +90,17 @@ For example, this avro schema will produce the following python
 ```python
 from typing import TypedDict, Optional
 
-class AddressUSRecord(TypedDict):
+class example_AddressUSRecord(TypedDict):
     streetaddress: str
     city: str
 
 
-class OtherThing(TypedDict):
+class example_OtherThing(TypedDict):
     thing1: str
     thing2: Optional[int]
 
 
-class User(TypedDict):
+class example_User(TypedDict):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]
