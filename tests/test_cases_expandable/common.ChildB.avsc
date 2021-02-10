@@ -1,0 +1,9 @@
+{
+  "namespace": "common",
+  "type": "record",
+  "name": "ChildB",
+  "fields": [
+    { "name": "streetaddress", "type": "string" },
+    { "name": "city", "type": "string" }
+  ]
+}

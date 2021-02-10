@@ -1,0 +1,30 @@
+{
+  "namespace": "domain",
+  "type": "record",
+  "name": "Parent",
+  "fields": [
+    {
+      "name": "first_item",
+      "type": "common.ChildA"
+    },
+    {
+      "name": "second_item",
+      "type": "common.ChildA"
+    },
+    {
+      "name": "composite_item",
+      "type": {
+        "type": "record",
+        "name": "CompositeItem",
+        "fields": [
+          { "name": "composite_a", "type": "common.ChildA" },
+          { "name": "composite_b", "type": "common.ChildB" }
+        ]
+      }
+    },
+    {
+      "name": "favorite_color",
+      "type": ["string", "null"]
+    }
+  ]
+}
