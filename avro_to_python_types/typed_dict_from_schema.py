@@ -20,6 +20,14 @@ def is_nested(field):
 
 
 def dedupe_ast(tree):
+    """Takes an AST that has multiple identical classes defined and dedupes them."""
+    ###
+    # As an intermediate step in the typegen process we fully expand the schema, this will
+    # result in all referenced types being defined with their namespace - even if the same()
+    # one is defines more than once. This is of course not valid, and we want to dedupe it.
+    # https://fastavro.readthedocs.io/en/latest/schema.html#fastavro._schema_py.expand_schema
+    ###
+
     all_types = tree.body
     existing_type_names = []
     deduped_types = []
