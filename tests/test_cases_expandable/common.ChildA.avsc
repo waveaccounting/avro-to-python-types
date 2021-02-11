@@ -1,0 +1,10 @@
+{
+  "namespace": "common",
+  "type": "record",
+  "name": "ChildA",
+  "fields": [
+    { "name": "name", "type": "string" },
+    { "name": "favorite_number", "type": ["int", "null"] },
+    { "name": "favorite_color", "type": ["string", "null"] }
+  ]
+}

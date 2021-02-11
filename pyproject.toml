@@ -8,9 +8,30 @@ repository = "https://github.com/dangreenisrael/avro-to-python-types"
 license = "MIT"
 keywords = ["avro", "codegen", "avro schema", "typegen"]
 
+[tool.black]
+exclude = '''
+
+(
+  /(
+      \.eggs         
+    | \.git          
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+  | tests/snapshots
+)
+'''
+
 [tool.poetry.dependencies]
 python = "^3.9"
 astor = "^0.8.1"
+fastavro = "^1.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

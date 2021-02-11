@@ -1,13 +1,13 @@
 from typing import TypedDict, Optional
 
 
-class AddressUSRecord(TypedDict):
+class example_avro_AddressUSRecord(TypedDict):
     streetaddress: str
     city: str
 
 
-class User(TypedDict):
+class example_avro_User(TypedDict):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]
-    address: AddressUSRecord
+    address: example_avro_AddressUSRecord
