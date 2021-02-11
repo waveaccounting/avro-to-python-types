@@ -6,11 +6,11 @@ Currently, it supports converting `record`s to `TypedDict`. If you would like to
 
 ## Why would I want this?
 
-This library is targeted to people writing code generation for python apps that are using avro.
+This library is targeted to people writing code generation for python apps that are using [avro](https://avro.apache.org/docs/current/spec.html).
 
 ## Usage
 
-This library does one thing, it converts Avro schemas to python types.
+This library does [one thing](https://en.wikipedia.org/wiki/Unix_philosophy#Do_One_Thing_and_Do_It_Well), it converts Avro schemas to python types.
 
 To get up and running quickly, you can use this to simply load schemas and print out the python
 code that is generated.
