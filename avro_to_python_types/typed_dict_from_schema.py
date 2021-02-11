@@ -19,7 +19,7 @@ def is_nested(field):
     return False
 
 
-def dedupe_ast(tree):
+def _dedupe_ast(tree):
     """Takes an AST that has multiple identical classes defined and dedupes them."""
     ###
     # As an intermediate step in the typegen process we fully expand the schema, this will
@@ -73,7 +73,7 @@ def types_for_schema(schema):
     body.append(main_type.tree)
 
     imports = "from typing import TypedDict, Optional\n\n"
-    types = astor.to_source(dedupe_ast(tree))
+    types = astor.to_source(_dedupe_ast(tree))
     return imports + types
 
 
