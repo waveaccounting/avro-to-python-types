@@ -1,7 +1,7 @@
 # Code of Conduct
 
 This Code of Conduct sets the expectations to participate in the following open source community managed by Wave Financial Inc. Anyone violating this code of conduct may be banned from the community.
-With this project, Wave Apps is hoping to create a community that is welcoming, friendly, and patient.
+With this project, Wave Financial Inc. is hoping to create a community that is welcoming, friendly, and patient.
  
 ## Our Responsibilities
  

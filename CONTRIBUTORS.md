@@ -12,7 +12,7 @@ All kinds of contributions are welcome. When contributing code please use [open 
 
 ## Code Changes
 
-Any code change must be submitted as a pull request. The description should refer to the issue that the change is addressing with a description of what the code does. The pull request should also contain tests.
+Any code change must be submitted as a pull request. The description should refer to the issue that the code change is addressing with a description of what the code does. The pull request should also contain tests.
 
 ## Questions
 
