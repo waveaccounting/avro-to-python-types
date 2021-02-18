@@ -48,7 +48,7 @@ For more on this checkout the docs for fastavro [here](https://fastavro.readthed
 
 An example of this can be found in the tests.
 
-## Example output
+### Example output
 
 The following example shows the type generated for a given schema.
 
@@ -59,8 +59,8 @@ The following example shows the type generated for a given schema.
   "name": "User",
   "fields": [
     { "name": "name", "type": "string" },
-    { "name": "favorite_number", "type": ["int", "null"] },
-    { "name": "favorite_color", "type": ["string", "null"] },
+    { "name": "favorite_number", "type": ["null", "int"] },
+    { "name": "favorite_color", "type": ["null", "string"] },
     {
       "name": "address",
       "type": {
@@ -79,7 +79,7 @@ The following example shows the type generated for a given schema.
         "name": "OtherThing",
         "fields": [
           { "name": "thing1", "type": "string" },
-          { "name": "thing2", "type": ["int", "null"] }
+          { "name": "thing2", "type": ["null", "int"] }
         ]
       }
     }
@@ -107,3 +107,7 @@ class example_User(TypedDict):
     address: AddressUSRecord
     other_thing: OtherThing
 ```
+
+## Testing
+
+To run unit tests, run `poetry run pytest`.

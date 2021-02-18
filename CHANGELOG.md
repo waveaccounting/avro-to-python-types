@@ -1,5 +1,9 @@
 # Changelog
+## 0.2.1
 
+### Fixed
+
+- An issue with parsing nullable fields
 ## 0.2.0
 
 ### Added

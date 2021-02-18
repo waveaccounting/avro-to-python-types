@@ -24,7 +24,7 @@
     },
     {
       "name": "favorite_color",
-      "type": ["string", "null"]
+      "type": ["null", "string"]
     }
   ]
 }

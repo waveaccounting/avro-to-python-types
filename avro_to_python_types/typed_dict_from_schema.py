@@ -8,7 +8,7 @@ import astor
 
 def is_nullable(field):
     if isinstance(field["type"], list):
-        if field["type"][1] == "null":
+        if field["type"][0] == "null":
             return True
     return False
 
@@ -62,7 +62,7 @@ def types_for_schema(schema):
                     our_type.add_required_element(name, nested.name)
                 continue
             if is_nullable(field):
-                type = field["type"][0]
+                type = field["type"][1]
                 our_type.add_optional_element(name, prim_to_type[type])
             else:
                 type = field["type"]
