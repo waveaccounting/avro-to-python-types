@@ -9,11 +9,11 @@
     },
     {
       "name": "favorite_number",
-      "type": ["int", "null"]
+      "type": ["null", "int"]
     },
     {
       "name": "favorite_color",
-      "type": ["string", "null"]
+      "type": ["null", "string"]
     },
     {
       "name": "address",
@@ -44,7 +44,7 @@
           },
           {
             "name": "thing2",
-            "type": ["int", "null"]
+            "type": ["null", "int"]
           }
         ]
       }
