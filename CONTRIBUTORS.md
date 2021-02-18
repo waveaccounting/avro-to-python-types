@@ -2,7 +2,7 @@
  
 Thank you for your interest in contributing to this project! All kinds of contributions are welcome; commenting, reviewing and sending pull requests! We hope to build a vibrant community as we grow the project.
  
-Before contributing please visit the [Open Source Guides](https://opensource.guide/) to learn more about contributing to an open-source project.
+Before contributing, please visit the [Open Source Guides](https://opensource.guide/) to learn more about contributing to an open-source project.
  
 ### [Code of Conduct](https://github.com/waveaccounting/avro-to-python-types/blob/main/CODE_OF_CONDUCT.md)
  
@@ -16,4 +16,4 @@ Any code change must be submitted as a pull request. The description should refe
 
 ## Questions
 
-If you have any questions, create an [issue](https://github.com/waveaccounting/avro-to-python-types/issues). Using the 'Report Content' option in Github, content that violates the Code of Conduct can be reported.
+If you have any questions, create an [issue](https://github.com/waveaccounting/avro-to-python-types/issues).
