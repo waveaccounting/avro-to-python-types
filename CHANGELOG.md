@@ -1,4 +1,10 @@
 # Changelog
+
+## 0.2.2
+
+### Added
+
+- `py.typed file`
 ## 0.2.1
 
 ### Fixed
