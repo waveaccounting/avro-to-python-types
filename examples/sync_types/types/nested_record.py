@@ -1,5 +1,6 @@
 from typing import TypedDict, Optional
 
+
 class ExampleAvroAddressUSRecord(TypedDict):
     streetaddress: str
     city: str
