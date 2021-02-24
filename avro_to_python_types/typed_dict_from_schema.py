@@ -49,7 +49,7 @@ def types_for_schema(schema):
     body = tree.body
 
     def type_for_schema_record(record_schema):
-        type_name = record_schema["name"].replace(".", "_")
+        type_name = ''.join(word[0].upper() + word[1:] for word in record_schema['name'].split('.'))
         our_type = GenerateTypedDict(type_name)
         for field in record_schema["fields"]:
             name = field["name"]
