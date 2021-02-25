@@ -90,17 +90,17 @@ The following example shows the type generated for a given schema.
 ```python
 from typing import TypedDict, Optional
 
-class example_AddressUSRecord(TypedDict):
+class ExampleAddressUSRecord(TypedDict):
     streetaddress: str
     city: str
 
 
-class example_OtherThing(TypedDict):
+class ExampleOtherThing(TypedDict):
     thing1: str
     thing2: Optional[int]
 
 
-class example_User(TypedDict):
+class ExampleUser(TypedDict):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]

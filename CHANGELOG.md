@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+
+### Breaking Changes
+
+- Generated classes now follow proper PEP 8 naming convention: https://www.python.org/dev/peps/pep-0008/#class-names
 ## 0.2.2
 
 ### Added
