@@ -23,7 +23,7 @@ schema_files = glob.glob("schemas/*.avsc")
 
 for schema_file in schema_files:
     types = typed_dict_from_schema_file(schema_file)
-    print(types)
+    print(types) 
 
 ```
 

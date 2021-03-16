@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 prim_to_type = {
     "null": "None",
     "boolean": "bool",
@@ -9,4 +10,13 @@ prim_to_type = {
     "double": "float",
     "bytes": "bytes",
     "string": "str",
+}
+
+
+logical_to_python_type = {
+    "date": "datetime.date",
+    "time-millis": "datetime.time",
+    "timestamp-millis": "datetime.datetime",
+    "uuid": "uuid.UUID",
+    "decimal": "decimal.Decimal",
 }
