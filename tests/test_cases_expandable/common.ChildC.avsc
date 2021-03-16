@@ -3,11 +3,11 @@
   "type": "record",
   "name": "ChildB",
   "fields": [
-    { "name": "streetaddress", "type": "string" },
-    { "name": "city", "type": "string" },
+    { "name": "streetaddress", "type": ["null","string"] },
+    { "name": "city", "type":[ "string","null"] },
     { "name": "birthdate", "type": { "type":"int", "logicalType":"date" }},
     { "name": "appt_date", "type": { "type" : "int", "logicalType":"date" }},
-    { "name": "time_of_day_birth", "type": { "type": "int", "logicalType":"time-millis" }},
+    { "name": "time_of_day_birth", "type":[ { "type": "int", "logicalType":"time-millis" },"null"]},
     { "name": "timestamp_of_birth", "type": { "type": "long", "logicalType":"timestamp-millis" }},
     { "name": "uuid_of_birth_record", "type": { "type": "string", "logicalType":"uuid" }},
     { "name": "weight", "type": {"type": "bytes", "logicalType":"decimal" ,"precision": 5,"scale":2}}
