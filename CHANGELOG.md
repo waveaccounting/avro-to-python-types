@@ -1,4 +1,10 @@
 # Changelog
+## 0.4.0
+
+### Added
+
+- Support for logical types date, time-millis, timestamp-millis, UUID and decimal in the schema.
+- Test cases for new types and modified the sample-types code to use the new types as well.
 
 ## 0.3.0
 
