@@ -7,8 +7,7 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas common.ChildA.avsc'] = '''from typing import Optional
-from typing import TypedDict
+snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas common.ChildA.avsc'] = '''from typing import Optional, TypedDict
 
 
 class CommonChildA(TypedDict):
@@ -40,8 +39,7 @@ snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas com
 from datetime import datetime
 from datetime import time
 from decimal import Decimal
-from typing import Optional
-from typing import TypedDict
+from typing import Optional, TypedDict
 from uuid import UUID
 
 
@@ -60,8 +58,7 @@ snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas dom
 from datetime import datetime
 from datetime import time
 from decimal import Decimal
-from typing import Optional
-from typing import TypedDict
+from typing import Optional, TypedDict
 from uuid import UUID
 
 
@@ -94,8 +91,7 @@ class DomainParent(TypedDict):
     favorite_color: Optional[str]
 '''
 
-snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_self_contained_schemas nested_record.avsc'] = '''from typing import Optional
-from typing import TypedDict
+snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_self_contained_schemas nested_record.avsc'] = '''from typing import Optional, TypedDict
 
 
 class ExampleAvroAddressUSRecord(TypedDict):
@@ -110,8 +106,7 @@ class ExampleAvroUser(TypedDict):
     address: ExampleAvroAddressUSRecord
 '''
 
-snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_self_contained_schemas nested_records.avsc'] = '''from typing import Optional
-from typing import TypedDict
+snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_self_contained_schemas nested_records.avsc'] = '''from typing import Optional, TypedDict
 
 
 class ExampleAddressUSRecord(TypedDict):
@@ -132,8 +127,7 @@ class ExampleUser(TypedDict):
     other_thing: ExampleOtherThing
 '''
 
-snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_self_contained_schemas nested_records_deep.avsc'] = '''from typing import Optional
-from typing import TypedDict
+snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_self_contained_schemas nested_records_deep.avsc'] = '''from typing import Optional, TypedDict
 
 
 class ExampleAvroAddressUSRecord(TypedDict):
@@ -166,8 +160,7 @@ class ExampleAvroAnotherExample(TypedDict):
     id: str
 '''
 
-snapshots['SnapshotTypedDictFromSchemaString::test_snapshot_all_schemas nested_record.avsc'] = '''from typing import Optional
-from typing import TypedDict
+snapshots['SnapshotTypedDictFromSchemaString::test_snapshot_all_schemas nested_record.avsc'] = '''from typing import Optional, TypedDict
 
 
 class ExampleAvroAddressUSRecord(TypedDict):
@@ -182,8 +175,7 @@ class ExampleAvroUser(TypedDict):
     address: ExampleAvroAddressUSRecord
 '''
 
-snapshots['SnapshotTypedDictFromSchemaString::test_snapshot_all_schemas nested_records.avsc'] = '''from typing import Optional
-from typing import TypedDict
+snapshots['SnapshotTypedDictFromSchemaString::test_snapshot_all_schemas nested_records.avsc'] = '''from typing import Optional, TypedDict
 
 
 class ExampleAddressUSRecord(TypedDict):
@@ -204,8 +196,7 @@ class ExampleUser(TypedDict):
     other_thing: ExampleOtherThing
 '''
 
-snapshots['SnapshotTypedDictFromSchemaString::test_snapshot_all_schemas nested_records_deep.avsc'] = '''from typing import Optional
-from typing import TypedDict
+snapshots['SnapshotTypedDictFromSchemaString::test_snapshot_all_schemas nested_records_deep.avsc'] = '''from typing import Optional, TypedDict
 
 
 class ExampleAvroAddressUSRecord(TypedDict):
