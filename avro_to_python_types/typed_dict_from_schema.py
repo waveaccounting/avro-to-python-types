@@ -129,14 +129,14 @@ def types_for_schema(schema):
     imports = []
     main_type = type_for_schema_record(schema, imports)
 
-    addional_types = []
+    additional_types = []
     # import the Optional type only if required
     if OPTIONAL in ast.dump(main_type.tree):
-        addional_types.append(OPTIONAL)
-    addional_types.append("TypedDict")
-    addional_types_as_str = ", ".join(addional_types)
+        additional_types.append(OPTIONAL)
+    additional_types.append("TypedDict")
+    additional_types_as_str = ", ".join(additional_types)
 
-    imports.append(f"from typing import {addional_types_as_str}\n")
+    imports.append(f"from typing import {additional_types_as_str}\n")
 
     body.append(main_type.tree)
     imports = sorted(list(set(imports)))
