@@ -1,8 +1,8 @@
 # Changelog
 ## 0.5.0
 ### Changed
-- The `Optional` type is imported only if necessary
-- If both `Optional` and `TypedDict` are imported, the imports are sorted
+- The `Optional` type is imported only if necessary.
+- If both `Optional` and `TypedDict` are imported, the imports are sorted alphabetically.
 
 ## 0.4.0
 
