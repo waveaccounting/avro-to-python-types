@@ -1,3 +1,4 @@
+from .constants import OPTIONAL
 from .generate_typed_dict import GenerateTypedDict
 from .schema_mapping import prim_to_type, logical_to_python_type
 from fastavro.schema import load_schema, expand_schema, parse_schema
@@ -125,8 +126,18 @@ def types_for_schema(schema):
                     our_type.add_required_element(name, prim_to_type[type])
         return our_type
 
-    imports = ["from typing import TypedDict, Optional\n"]
+    imports = []
     main_type = type_for_schema_record(schema, imports)
+
+    additional_types = []
+    # import the Optional type only if required
+    if OPTIONAL in ast.dump(main_type.tree):
+        additional_types.append(OPTIONAL)
+    additional_types.append("TypedDict")
+    additional_types_as_str = ", ".join(additional_types)
+
+    imports.append(f"from typing import {additional_types_as_str}\n")
+
     body.append(main_type.tree)
     imports = sorted(list(set(imports)))
     return "".join(imports) + "\n\n" + astor.to_source(_dedupe_ast(tree))

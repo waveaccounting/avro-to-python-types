@@ -1,6 +1,9 @@
 import astor
 import ast
 
+from .constants import OPTIONAL
+
+
 base = """
 class Example(TypedDict):
     foo: str
@@ -15,7 +18,7 @@ def required_element(name, type):
 
 def optional_element(name, type):
     target = ast.Name(id=name)
-    annotation = ast.Subscript(value=ast.Name(id="Optional"), slice=ast.Name(id=type))
+    annotation = ast.Subscript(value=ast.Name(id=OPTIONAL), slice=ast.Name(id=type))
     return ast.AnnAssign(target=target, annotation=annotation, simple=1)
 
 
