@@ -16,6 +16,9 @@ jobs:
       - name: Install poetry
         run: |
           pip install poetry
+      - name: Resolve and Install Dependencies from pyproject.toml
+        run: |
+          poetry install
       - name: Build package
         run: |
           poetry build
