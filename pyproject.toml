@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "avro-to-python-types"
-version = "0.4.0"
+version = "0.5.0"
 description = "A library for converting avro schemas to python types."
 readme = "README.md"
 authors = ["Dan Green-Leipciger"]
