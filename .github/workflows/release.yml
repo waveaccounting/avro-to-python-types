@@ -21,4 +21,4 @@ jobs:
           poetry build
       - name: Publish
         run: |
-          poetry publish --username=__token__ --password='${{ secrets.TESTPYPI_TOKEN}}'
+          poetry publish --username=__token__ --password='${{ secrets.PYPI_TOKEN}}'
