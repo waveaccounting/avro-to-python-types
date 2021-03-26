@@ -1,4 +1,8 @@
 # Changelog
+## 0.6.0
+### Changed
+- Make library compatible with Python 3.8
+
 ## 0.5.0
 ### Changed
 - The `Optional` type is imported only if necessary.
