@@ -6,38 +6,69 @@ import ast
 import json
 import astor
 
+from avro_to_python_types.constants import (
+    ENUM,
+    ENUM_CLASS,
+    FIELDS,
+    LOGICAL_TYPE,
+    NAME,
+    NULL,
+    RECORD,
+    STRING,
+    SYMBOLS,
+    TYPE
+)
 
 def is_nullable(field):
-    if isinstance(field["type"], list):
-        for ftype in field["type"]:
-            if ftype == "null":
+    if isinstance(field[TYPE], list):
+        for ftype in field[TYPE]:
+            if ftype == NULL:
                 return True
+    
     return False
 
+def field_type_is_of_type(field_type, type_name):
+    """Check that the field type is has a particular type, or a list with that type"""
+    if isinstance(field_type, list):
+        for list_type in list(field_type):
+            if (isinstance(list_type, dict)
+                    and  TYPE in list_type
+                    and list_type[TYPE] == type_name):
+                return True
+    elif(isinstance(field_type, dict)
+                    and  TYPE in field_type
+                    and field_type[TYPE] == type_name):
+            return True
+    return False
 
 def is_nested(field):
-    if isinstance(field["type"], dict) and not is_logical_type(field["type"]):
-        return True
-    return False
+    return field_type_is_of_type(field[TYPE], RECORD)
+    # if (isinstance(field[TYPE], dict)
+    #     and TYPE in field[TYPE]
+    #     and field_type_is_of_type(field[TYPE],RECORD)
+    # ):
+    #     return True
+    # return False
 
 
-def is_logical_type(field_type):
-    if isinstance(field_type, list):
-        for ftype in field_type:
-            if ftype != "null" and isinstance(ftype, dict):
-                return "logicalType" in ftype
-    elif isinstance(field_type, dict):
-        return "logicalType" in field_type
-    return False
+# def is_logical_type(field_type):
+#     return field_type_is_of_type(field_type, LOGICAL_TYPE)
+    # if isinstance(field_type, list):
+    #     for ftype in field_type:
+    #         if ftype != NULL and isinstance(ftype, dict):
+    #             return LOGICAL_TYPE in ftype
+    # elif isinstance(field_type, dict):
+    #     return LOGICAL_TYPE in field_type
+    # return False
 
 
 def get_type(types):
     if not isinstance(types, list) and not isinstance(types, dict):
         return types
     elif isinstance(types, dict):
-        return types["type"]
+        return types[TYPE]
     for ftype in types:
-        if ftype != "null":
+        if ftype != NULL:
             return ftype
     raise ValueError("no valid type in list: {}".format(types))
 
@@ -46,17 +77,17 @@ def get_logical_type(types):
     if not isinstance(types, list) and not isinstance(types, dict):
         raise ValueError("not a logical type: {}".format(types))
     elif isinstance(types, dict):
-        return types["logicalType"]
+        return types[LOGICAL_TYPE]
     for ftype in types:
         if isinstance(ftype, dict):
-            return ftype["logicalType"]
+            return ftype[LOGICAL_TYPE]
     raise ValueError("unexpected error in logical type: {}".format(types))
 
 
-def is_logical(field):
-    return (
-        isinstance(field["type"], dict) or isinstance(field["type"], list)
-    ) and is_logical_type(field["type"])
+# def is_logical(field):
+#     return (
+#         isinstance(field[TYPE], dict) or isinstance(field[TYPE], list)
+#     ) and is_logical_type(field[TYPE])
 
 
 def _dedupe_ast(tree):
@@ -92,23 +123,25 @@ def types_for_schema(schema):
     tree = ast.Module(body)
     body = tree.body
 
-    def type_for_schema_record(record_schema, imports):
+    def type_for_schema_record(record_schema, imports, enums):
         type_name = "".join(
             word[0].upper() + word[1:] for word in record_schema["name"].split(".")
         )
         our_type = GenerateTypedDict(type_name)
-        for field in record_schema["fields"]:
-            name = field["name"]
-            if is_nested(field):
-                nested = type_for_schema_record(field["type"], imports)
+        for field in record_schema[FIELDS]:
+            name = field[NAME]
+            # nested
+            if field_type_is_of_type(field[TYPE], RECORD):
+                nested = type_for_schema_record(field[TYPE], imports, enums)
                 body.append(nested.tree)
                 if is_nullable(field):
                     our_type.add_optional_element(name, nested.name)
                 else:
                     our_type.add_required_element(name, nested.name)
                 continue
-            if is_logical(field):
-                logical_type = logical_to_python_type[get_logical_type(field["type"])]
+            # logical
+            if field_type_is_of_type(field[TYPE], LOGICAL_TYPE):
+                logical_type = logical_to_python_type[get_logical_type(field[TYPE])]
                 imports.append(
                     "from {} import {}\n".format(
                         logical_type.split(".")[0], logical_type.split(".")[1]
@@ -118,16 +151,30 @@ def types_for_schema(schema):
                     our_type.add_optional_element(name, logical_type.split(".")[1])
                 else:
                     our_type.add_required_element(name, logical_type.split(".")[1])
-            else:
-                type = get_type(field["type"])
+            # enum
+            elif field_type_is_of_type(field[TYPE], ENUM):
+                imports.append("from {} import {}\n".format(ENUM, ENUM_CLASS))
+                enum_class = f"class {field[NAME]}(Enum):"
+                for e in field[TYPE][SYMBOLS]:
+                    enum_class += f"\n    {e} = {e}"
+                enum_class += "\n\n"
+                enums.append(enum_class)
                 if is_nullable(field):
-                    our_type.add_optional_element(name, prim_to_type[type])
+                    our_type.add_optional_element(name, field[NAME])
                 else:
-                    our_type.add_required_element(name, prim_to_type[type])
+                    our_type.add_required_element(name, field[NAME])
+            # primitive
+            else:
+                _type = get_type(field[TYPE])
+                if is_nullable(field):
+                    our_type.add_optional_element(name, prim_to_type[_type])
+                else:
+                    our_type.add_required_element(name, prim_to_type[_type])
         return our_type
 
     imports = []
-    main_type = type_for_schema_record(schema, imports)
+    enums = []
+    main_type = type_for_schema_record(schema, imports, enums)
 
     additional_types = []
     # import the Optional type only if required
@@ -140,7 +187,7 @@ def types_for_schema(schema):
 
     body.append(main_type.tree)
     imports = sorted(list(set(imports)))
-    return "".join(imports) + "\n\n" + astor.to_source(_dedupe_ast(tree))
+    return "".join(imports) + "\n\n" + "".join(enums) + astor.to_source(_dedupe_ast(tree))
 
 
 def typed_dict_from_schema_string(schema_string):
