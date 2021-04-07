@@ -23,7 +23,8 @@ def is_nullable(field):
     if isinstance(field[TYPE], list):
         for ftype in field[TYPE]:
             if ftype == NULL:
-                return True    return False
+                return True    
+    return False
 
 
 def field_type_is_of_type(field_type, type_name):
