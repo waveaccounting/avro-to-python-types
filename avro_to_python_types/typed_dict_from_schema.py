@@ -23,43 +23,31 @@ def is_nullable(field):
     if isinstance(field[TYPE], list):
         for ftype in field[TYPE]:
             if ftype == NULL:
-                return True
-    
-    return False
+                return True    return False
+
 
 def field_type_is_of_type(field_type, type_name):
     """Check that the field type is has a particular type, or a list with that type"""
     if isinstance(field_type, list):
         for list_type in list(field_type):
-            if (isinstance(list_type, dict)
-                    and  TYPE in list_type
-                    and list_type[TYPE] == type_name):
+            if ((isinstance(list_type, dict)
+                        and  TYPE in list_type
+                        and list_type[TYPE] == type_name)
+                    or
+                        (isinstance(list_type, dict) #logicalType
+                        and  type_name in list_type)):
                 return True
-    elif(isinstance(field_type, dict)
-                    and  TYPE in field_type
-                    and field_type[TYPE] == type_name):
-            return True
+    elif((isinstance(field_type, dict)
+                and  TYPE in field_type
+                and field_type[TYPE] == type_name)
+            or
+                (isinstance(field_type, dict) #logicalType
+                and  type_name in field_type)):
+        return True
     return False
 
 def is_nested(field):
     return field_type_is_of_type(field[TYPE], RECORD)
-    # if (isinstance(field[TYPE], dict)
-    #     and TYPE in field[TYPE]
-    #     and field_type_is_of_type(field[TYPE],RECORD)
-    # ):
-    #     return True
-    # return False
-
-
-# def is_logical_type(field_type):
-#     return field_type_is_of_type(field_type, LOGICAL_TYPE)
-    # if isinstance(field_type, list):
-    #     for ftype in field_type:
-    #         if ftype != NULL and isinstance(ftype, dict):
-    #             return LOGICAL_TYPE in ftype
-    # elif isinstance(field_type, dict):
-    #     return LOGICAL_TYPE in field_type
-    # return False
 
 
 def get_type(types):
@@ -73,6 +61,28 @@ def get_type(types):
     raise ValueError("no valid type in list: {}".format(types))
 
 
+def get_enum_class(enum_type):
+    if isinstance(enum_type, list):
+        for list_type in list(enum_type):
+            if isinstance(list_type, dict) and  NAME in list_type:
+                return list_type[NAME]
+    elif isinstance(enum_type, dict) and  NAME in enum_type:
+        return enum_type[NAME]
+    else:
+        raise Exception("invalid schema, enum type has no name")
+    
+
+def get_enum_symbols(enum_type):
+    if isinstance(enum_type, list):
+        for list_type in list(enum_type):
+            if isinstance(list_type, dict):
+                return list_type[SYMBOLS]
+    elif isinstance(enum_type, dict) and  NAME in enum_type:
+        return enum_type[SYMBOLS]
+    else:
+        raise Exception("invalid schema, enum type has no name")
+    
+
 def get_logical_type(types):
     if not isinstance(types, list) and not isinstance(types, dict):
         raise ValueError("not a logical type: {}".format(types))
@@ -82,12 +92,6 @@ def get_logical_type(types):
         if isinstance(ftype, dict):
             return ftype[LOGICAL_TYPE]
     raise ValueError("unexpected error in logical type: {}".format(types))
-
-
-# def is_logical(field):
-#     return (
-#         isinstance(field[TYPE], dict) or isinstance(field[TYPE], list)
-#     ) and is_logical_type(field[TYPE])
 
 
 def _dedupe_ast(tree):
@@ -154,15 +158,17 @@ def types_for_schema(schema):
             # enum
             elif field_type_is_of_type(field[TYPE], ENUM):
                 imports.append("from {} import {}\n".format(ENUM, ENUM_CLASS))
-                enum_class = f"class {field[NAME]}(Enum):"
-                for e in field[TYPE][SYMBOLS]:
-                    enum_class += f"\n    {e} = {e}"
+                enum_class_name = ("".join(word[0].upper() + word[1:] for word in 
+                    get_enum_class(field[TYPE]).split(".")))
+                enum_class = f"class {enum_class_name}(Enum):\n"
+                for e in get_enum_symbols(field[TYPE]):
+                    enum_class += f"    {e} = {e}\n"
                 enum_class += "\n\n"
                 enums.append(enum_class)
                 if is_nullable(field):
-                    our_type.add_optional_element(name, field[NAME])
+                    our_type.add_optional_element(name, enum_class_name)
                 else:
-                    our_type.add_required_element(name, field[NAME])
+                    our_type.add_required_element(name, enum_class_name)
             # primitive
             else:
                 _type = get_type(field[TYPE])
@@ -187,7 +193,10 @@ def types_for_schema(schema):
 
     body.append(main_type.tree)
     imports = sorted(list(set(imports)))
-    return "".join(imports) + "\n\n" + "".join(enums) + astor.to_source(_dedupe_ast(tree))
+    enum_str = ""
+    if len(enums) > 0:
+        enum_str = "".join(enums)
+    return "".join(imports) + "\n\n" + enum_str +  astor.to_source(_dedupe_ast(tree))
 
 
 def typed_dict_from_schema_string(schema_string):
