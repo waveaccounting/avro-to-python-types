@@ -1,4 +1,8 @@
 # Changelog
+## 0.7.0
+### Changed
+- Added enum support
+  
 ## 0.6.0
 ### Changed
 - Make library compatible with Python 3.8
