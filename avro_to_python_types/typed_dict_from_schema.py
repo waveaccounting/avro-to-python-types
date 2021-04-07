@@ -16,14 +16,15 @@ from avro_to_python_types.constants import (
     RECORD,
     STRING,
     SYMBOLS,
-    TYPE
+    TYPE,
 )
+
 
 def is_nullable(field):
     if isinstance(field[TYPE], list):
         for ftype in field[TYPE]:
             if ftype == NULL:
-                return True    
+                return True
     return False
 
 
@@ -31,21 +32,24 @@ def field_type_is_of_type(field_type, type_name):
     """Check that the field type is has a particular type, or a list with that type"""
     if isinstance(field_type, list):
         for list_type in list(field_type):
-            if ((isinstance(list_type, dict)
-                        and  TYPE in list_type
-                        and list_type[TYPE] == type_name)
-                    or
-                        (isinstance(list_type, dict) #logicalType
-                        and  type_name in list_type)):
+            if (
+                isinstance(list_type, dict)
+                and TYPE in list_type
+                and list_type[TYPE] == type_name
+            ) or (
+                isinstance(list_type, dict) and type_name in list_type  # logicalType
+            ):
                 return True
-    elif((isinstance(field_type, dict)
-                and  TYPE in field_type
-                and field_type[TYPE] == type_name)
-            or
-                (isinstance(field_type, dict) #logicalType
-                and  type_name in field_type)):
+    elif (
+        isinstance(field_type, dict)
+        and TYPE in field_type
+        and field_type[TYPE] == type_name
+    ) or (
+        isinstance(field_type, dict) and type_name in field_type  # logicalType
+    ):
         return True
     return False
+
 
 def is_nested(field):
     return field_type_is_of_type(field[TYPE], RECORD)
@@ -65,24 +69,24 @@ def get_type(types):
 def get_enum_class(enum_type):
     if isinstance(enum_type, list):
         for list_type in list(enum_type):
-            if isinstance(list_type, dict) and  NAME in list_type:
+            if isinstance(list_type, dict) and NAME in list_type:
                 return list_type[NAME]
-    elif isinstance(enum_type, dict) and  NAME in enum_type:
+    elif isinstance(enum_type, dict) and NAME in enum_type:
         return enum_type[NAME]
     else:
         raise Exception("invalid schema, enum type has no name")
-    
+
 
 def get_enum_symbols(enum_type):
     if isinstance(enum_type, list):
         for list_type in list(enum_type):
             if isinstance(list_type, dict):
                 return list_type[SYMBOLS]
-    elif isinstance(enum_type, dict) and  NAME in enum_type:
+    elif isinstance(enum_type, dict) and NAME in enum_type:
         return enum_type[SYMBOLS]
     else:
         raise Exception("invalid schema, enum type has no name")
-    
+
 
 def get_logical_type(types):
     if not isinstance(types, list) and not isinstance(types, dict):
@@ -159,8 +163,10 @@ def types_for_schema(schema):
             # enum
             elif field_type_is_of_type(field[TYPE], ENUM):
                 imports.append("from {} import {}\n".format(ENUM, ENUM_CLASS))
-                enum_class_name = ("".join(word[0].upper() + word[1:] for word in 
-                    get_enum_class(field[TYPE]).split(".")))
+                enum_class_name = "".join(
+                    word[0].upper() + word[1:]
+                    for word in get_enum_class(field[TYPE]).split(".")
+                )
                 enum_class = f"class {enum_class_name}(Enum):\n"
                 for e in get_enum_symbols(field[TYPE]):
                     enum_class += f"    {e} = {e}\n"
@@ -197,7 +203,7 @@ def types_for_schema(schema):
     enum_str = ""
     if len(enums) > 0:
         enum_str = "".join(enums)
-    return "".join(imports) + "\n\n" + enum_str +  astor.to_source(_dedupe_ast(tree))
+    return "".join(imports) + "\n\n" + enum_str + astor.to_source(_dedupe_ast(tree))
 
 
 def typed_dict_from_schema_string(schema_string):
