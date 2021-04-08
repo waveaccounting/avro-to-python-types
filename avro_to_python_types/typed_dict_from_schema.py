@@ -30,26 +30,21 @@ def is_nullable(field):
 
 def field_type_is_of_type(field_type, type_name):
     """Check that the field type is has a particular type, or a list with that type"""
-    if isinstance(field_type, list):
-        for list_type in list(field_type):
-            if (
-                isinstance(list_type, dict)
-                and TYPE in list_type
-                and list_type[TYPE] == type_name
-            ) or (
-                isinstance(list_type, dict) and type_name in list_type  # logicalType
-            ):
-                return True
-    elif (
-        isinstance(field_type, dict)
-        and TYPE in field_type
-        and field_type[TYPE] == type_name
-    ) or (
-        isinstance(field_type, dict) and type_name in field_type  # logicalType
-    ):
-        return True
-    return False
+    def dict_type_is_of_type(dict_type,type_name):
+        return (
+                (TYPE in dict_type and dict_type[TYPE] == type_name) 
+            or 
+                (type_name in dict_type)  # logicalType
+        )
 
+    if isinstance(field_type, list):
+        for type_from_list in list(field_type):
+            if isinstance(type_from_list, dict):
+                return dict_type_is_of_type(type_from_list, type_name)
+    elif isinstance(field_type, dict):
+        return dict_type_is_of_type(field_type, type_name)
+    else:
+        return False
 
 def is_nested(field):
     return field_type_is_of_type(field[TYPE], RECORD)
