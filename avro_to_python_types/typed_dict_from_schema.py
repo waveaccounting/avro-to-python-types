@@ -15,7 +15,6 @@ from avro_to_python_types.constants import (
     NAME,
     NULL,
     RECORD,
-    STRING,
     SYMBOLS,
     TYPE,
 )
