@@ -90,6 +90,7 @@ The following example shows the type generated for a given schema.
 ```python
 from typing import TypedDict, Optional
 
+# total=False allows us to skip passing optional fields into the constructor
 class ExampleAddressUSRecord(TypedDict, total=False):
     streetaddress: str
     city: str
@@ -106,6 +107,7 @@ class ExampleUser(TypedDict, total=False):
     favorite_color: Optional[str]
     address: AddressUSRecord
     other_thing: OtherThing
+
 ```
 
 ## Testing
