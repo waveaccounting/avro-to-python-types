@@ -30,12 +30,11 @@ def is_nullable(field):
 
 def field_type_is_of_type(field_type, type_name):
     """Check that the field type is has a particular type, or a list with that type"""
-    def dict_type_is_of_type(dict_type,type_name):
-        return (
-                (TYPE in dict_type and dict_type[TYPE] == type_name) 
-            or 
-                (type_name in dict_type)  # logicalType
-        )
+
+    def dict_type_is_of_type(dict_type, type_name):
+        return (TYPE in dict_type and dict_type[TYPE] == type_name) or (
+            type_name in dict_type
+        )  # logicalType
 
     if isinstance(field_type, list):
         for type_from_list in list(field_type):
@@ -45,6 +44,7 @@ def field_type_is_of_type(field_type, type_name):
         return dict_type_is_of_type(field_type, type_name)
     else:
         return False
+
 
 def is_nested(field):
     return field_type_is_of_type(field[TYPE], RECORD)
@@ -91,7 +91,14 @@ def get_logical_type(types):
     for ftype in types:
         if isinstance(ftype, dict):
             return ftype[LOGICAL_TYPE]
-    raise ValueError("unexpected error in logical type: {}".format(types))
+    raise ValueError(f"unexpected error in logical type: {types}")
+
+
+def resolve_enum_str(enums: list):
+    if len(enums) > 0:
+        return "".join(enums)
+    else:
+        return ""
 
 
 def _dedupe_ast(tree):
@@ -195,10 +202,12 @@ def types_for_schema(schema):
 
     body.append(main_type.tree)
     imports = sorted(list(set(imports)))
-    enum_str = ""
-    if len(enums) > 0:
-        enum_str = "".join(enums)
-    return "".join(imports) + "\n\n" + enum_str + astor.to_source(_dedupe_ast(tree))
+    return (
+        "".join(imports)
+        + "\n\n"
+        + resolve_enum_str(enums)
+        + astor.to_source(_dedupe_ast(tree))
+    )
 
 
 def typed_dict_from_schema_string(schema_string):
