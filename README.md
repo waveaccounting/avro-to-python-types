@@ -90,22 +90,24 @@ The following example shows the type generated for a given schema.
 ```python
 from typing import TypedDict, Optional
 
-class ExampleAddressUSRecord(TypedDict):
+# total=False allows us to skip passing optional fields into the constructor
+class ExampleAddressUSRecord(TypedDict, total=False):
     streetaddress: str
     city: str
 
 
-class ExampleOtherThing(TypedDict):
+class ExampleOtherThing(TypedDict, total=False):
     thing1: str
     thing2: Optional[int]
 
 
-class ExampleUser(TypedDict):
+class ExampleUser(TypedDict, total=False):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]
     address: AddressUSRecord
     other_thing: OtherThing
+
 ```
 
 ## Testing

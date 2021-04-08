@@ -3,8 +3,9 @@ from .generate_typed_dict import GenerateTypedDict
 from .schema_mapping import prim_to_type, logical_to_python_type
 from fastavro.schema import load_schema, expand_schema, parse_schema
 import ast
+import astunparse
+import black
 import json
-import astor
 
 from avro_to_python_types.constants import (
     ENUM,
@@ -198,14 +199,15 @@ def types_for_schema(schema):
 
     body.append(main_type.tree)
     imports = sorted(list(set(imports)))
-    return (
+
+    generated_code = (
         "".join(imports)
-        + "\n\n"
         + resolve_enum_str(enums)
-        + astor.to_source(_dedupe_ast(tree))
+        + astunparse.unparse(_dedupe_ast(tree))
     )
-
-
+    formatted_code = black.format_str(generated_code, mode=black.FileMode())
+    return formatted_code
+    
 def typed_dict_from_schema_string(schema_string):
     schema = parse_schema(json.loads(schema_string))
     return types_for_schema(schema)

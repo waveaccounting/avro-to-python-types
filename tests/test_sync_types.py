@@ -52,12 +52,12 @@ nested_record_schema = {
 }
 
 
-class ExampleAvroAddressUSRecord(TypedDict):
+class ExampleAvroAddressUSRecord(TypedDict, total=False):
     streetaddress: str
     city: str
 
 
-class ExampleAvroUser(TypedDict):
+class ExampleAvroUser(TypedDict, total=False):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]

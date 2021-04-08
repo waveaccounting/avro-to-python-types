@@ -2,16 +2,16 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from decimal import Decimal
-from typing import TypedDict, Optional
+from typing import Optional, TypedDict
 from uuid import UUID
 
 
-class ExampleAvroAddressUSRecord(TypedDict):
+class ExampleAvroAddressUSRecord(TypedDict, total=False):
     streetaddress: str
     city: str
 
 
-class ExampleAvroUser(TypedDict):
+class ExampleAvroUser(TypedDict, total=False):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]

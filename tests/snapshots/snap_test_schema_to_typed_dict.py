@@ -10,7 +10,7 @@ snapshots = Snapshot()
 snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas common.ChildA.avsc'] = '''from typing import Optional, TypedDict
 
 
-class CommonChildA(TypedDict):
+class CommonChildA(TypedDict, total=False):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]
@@ -24,7 +24,7 @@ from typing import TypedDict
 from uuid import UUID
 
 
-class CommonChildB(TypedDict):
+class CommonChildB(TypedDict, total=False):
     streetaddress: str
     city: str
     birthdate: date
@@ -44,20 +44,7 @@ from typing import Optional, TypedDict
 from uuid import UUID
 
 
-class CommonSchool(Enum):
-    StBonifice = StBonifice
-    HogWarts = HogWarts
-    HardKnocks = HardKnocks
-    UnseenUniversity = UnseenUniversity
-
-
-class CommonEyeColor(Enum):
-    green = green
-    brown = brown
-    blue = blue
-
-
-class CommonChildC(TypedDict):
+class CommonChildB(TypedDict, total=False):
     streetaddress: Optional[str]
     city: Optional[str]
     birthdate: date
@@ -79,13 +66,13 @@ from typing import Optional, TypedDict
 from uuid import UUID
 
 
-class CommonChildA(TypedDict):
+class CommonChildA(TypedDict, total=False):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]
 
 
-class CommonChildB(TypedDict):
+class CommonChildB(TypedDict, total=False):
     streetaddress: str
     city: str
     birthdate: date
@@ -96,12 +83,12 @@ class CommonChildB(TypedDict):
     weight: Decimal
 
 
-class DomainCompositeItem(TypedDict):
+class DomainCompositeItem(TypedDict, total=False):
     composite_a: CommonChildA
     composite_b: CommonChildB
 
 
-class DomainParent(TypedDict):
+class DomainParent(TypedDict, total=False):
     first_item: CommonChildA
     second_item: CommonChildA
     composite_item: DomainCompositeItem
@@ -111,12 +98,12 @@ class DomainParent(TypedDict):
 snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_self_contained_schemas nested_record.avsc'] = '''from typing import Optional, TypedDict
 
 
-class ExampleAvroAddressUSRecord(TypedDict):
+class ExampleAvroAddressUSRecord(TypedDict, total=False):
     streetaddress: str
     city: str
 
 
-class ExampleAvroUser(TypedDict):
+class ExampleAvroUser(TypedDict, total=False):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]
@@ -126,17 +113,17 @@ class ExampleAvroUser(TypedDict):
 snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_self_contained_schemas nested_records.avsc'] = '''from typing import Optional, TypedDict
 
 
-class ExampleAddressUSRecord(TypedDict):
+class ExampleAddressUSRecord(TypedDict, total=False):
     streetaddress: str
     city: str
 
 
-class ExampleOtherThing(TypedDict):
+class ExampleOtherThing(TypedDict, total=False):
     thing1: str
     thing2: Optional[int]
 
 
-class ExampleUser(TypedDict):
+class ExampleUser(TypedDict, total=False):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]
@@ -147,22 +134,22 @@ class ExampleUser(TypedDict):
 snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_self_contained_schemas nested_records_deep.avsc'] = '''from typing import Optional, TypedDict
 
 
-class ExampleAvroAddressUSRecord(TypedDict):
+class ExampleAvroAddressUSRecord(TypedDict, total=False):
     streetaddress: str
     city: str
 
 
-class ExampleAvroNextOtherThing(TypedDict):
+class ExampleAvroNextOtherThing(TypedDict, total=False):
     thing1: str
     thing2: Optional[int]
 
 
-class ExampleAvroOtherThing(TypedDict):
+class ExampleAvroOtherThing(TypedDict, total=False):
     thing1: str
     other_thing: ExampleAvroNextOtherThing
 
 
-class ExampleAvroUser(TypedDict):
+class ExampleAvroUser(TypedDict, total=False):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]
@@ -173,19 +160,19 @@ class ExampleAvroUser(TypedDict):
 snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_self_contained_schemas no_optional_field_record.avsc'] = '''from typing import TypedDict
 
 
-class ExampleAvroAnotherExample(TypedDict):
+class ExampleAvroAnotherExample(TypedDict, total=False):
     id: str
 '''
 
 snapshots['SnapshotTypedDictFromSchemaString::test_snapshot_all_schemas nested_record.avsc'] = '''from typing import Optional, TypedDict
 
 
-class ExampleAvroAddressUSRecord(TypedDict):
+class ExampleAvroAddressUSRecord(TypedDict, total=False):
     streetaddress: str
     city: str
 
 
-class ExampleAvroUser(TypedDict):
+class ExampleAvroUser(TypedDict, total=False):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]
@@ -195,17 +182,17 @@ class ExampleAvroUser(TypedDict):
 snapshots['SnapshotTypedDictFromSchemaString::test_snapshot_all_schemas nested_records.avsc'] = '''from typing import Optional, TypedDict
 
 
-class ExampleAddressUSRecord(TypedDict):
+class ExampleAddressUSRecord(TypedDict, total=False):
     streetaddress: str
     city: str
 
 
-class ExampleOtherThing(TypedDict):
+class ExampleOtherThing(TypedDict, total=False):
     thing1: str
     thing2: Optional[int]
 
 
-class ExampleUser(TypedDict):
+class ExampleUser(TypedDict, total=False):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]
@@ -216,22 +203,22 @@ class ExampleUser(TypedDict):
 snapshots['SnapshotTypedDictFromSchemaString::test_snapshot_all_schemas nested_records_deep.avsc'] = '''from typing import Optional, TypedDict
 
 
-class ExampleAvroAddressUSRecord(TypedDict):
+class ExampleAvroAddressUSRecord(TypedDict, total=False):
     streetaddress: str
     city: str
 
 
-class ExampleAvroNextOtherThing(TypedDict):
+class ExampleAvroNextOtherThing(TypedDict, total=False):
     thing1: str
     thing2: Optional[int]
 
 
-class ExampleAvroOtherThing(TypedDict):
+class ExampleAvroOtherThing(TypedDict, total=False):
     thing1: str
     other_thing: ExampleAvroNextOtherThing
 
 
-class ExampleAvroUser(TypedDict):
+class ExampleAvroUser(TypedDict, total=False):
     name: str
     favorite_number: Optional[int]
     favorite_color: Optional[str]
@@ -242,6 +229,6 @@ class ExampleAvroUser(TypedDict):
 snapshots['SnapshotTypedDictFromSchemaString::test_snapshot_all_schemas no_optional_field_record.avsc'] = '''from typing import TypedDict
 
 
-class ExampleAvroAnotherExample(TypedDict):
+class ExampleAvroAnotherExample(TypedDict, total=False):
     id: str
 '''
