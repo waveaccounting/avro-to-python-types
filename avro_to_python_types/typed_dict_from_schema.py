@@ -31,10 +31,10 @@ def is_nullable(field):
 
 def field_type_is_of_type(field_type, type_name):
     """
-        Check that the field type has a particular type, or a list with that type
-        Compare the type of the dict representing this object's type against the
-        provided type_name.  So this generic func can be used to detect many
-        different types.
+    Check that the field type has a particular type, or a list with that type
+    Compare the type of the dict representing this object's type against the
+    provided type_name.  So this generic func can be used to detect many
+    different types.
     """
 
     def dict_type_is_of_type(dict_type, type_name):
@@ -65,9 +65,9 @@ def get_type(types):
 
 def get_enum_class(enum_type):
     """
-        The fields processed ty this module have already been parsed by fastavro.
-        Fastavro alters the 'name' property of the enum type to be prefixed with
-        the namespace of the schema.  This is what we're after here.
+    The fields processed ty this module have already been parsed by fastavro.
+    Fastavro alters the 'name' property of the enum type to be prefixed with
+    the namespace of the schema.  This is what we're after here.
     """
     if isinstance(enum_type, list):
         for list_type in list(enum_type):
@@ -81,8 +81,8 @@ def get_enum_class(enum_type):
 
 def get_enum_symbols(enum_type):
     """
-        Avro enums are strings and the entries are in the 'symbols' property of the
-        enum type
+    Avro enums are strings and the entries are in the 'symbols' property of the
+    enum type
     """
     if isinstance(enum_type, list):
         for list_type in list(enum_type):
@@ -96,7 +96,7 @@ def get_enum_symbols(enum_type):
 
 def get_logical_type(types):
     """
-        Logical types can be dates, datetimes, UUIDs etc.  
+    Logical types can be dates, datetimes, UUIDs etc.
     """
     if not isinstance(types, list) and not isinstance(types, dict):
         raise ValueError("not a logical type: {}".format(types))
