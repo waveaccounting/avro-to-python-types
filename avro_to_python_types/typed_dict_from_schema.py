@@ -30,7 +30,7 @@ def is_nullable(field):
 
 
 def field_type_is_of_type(field_type, type_name):
-    """Check that the field type is has a particular type, or a list with that type"""
+    """Check that the field type has a particular type, or a list with that type"""
 
     def dict_type_is_of_type(dict_type, type_name):
         return (TYPE in dict_type and dict_type[TYPE] == type_name) or (
