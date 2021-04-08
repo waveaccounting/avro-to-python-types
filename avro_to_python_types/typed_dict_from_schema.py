@@ -30,7 +30,12 @@ def is_nullable(field):
 
 
 def field_type_is_of_type(field_type, type_name):
-    """Check that the field type has a particular type, or a list with that type"""
+    """
+        Check that the field type has a particular type, or a list with that type
+        Compare the type of the dict representing this object's type against the
+        provided type_name.  So this generic func can be used to detect many
+        different types.
+    """
 
     def dict_type_is_of_type(dict_type, type_name):
         return (TYPE in dict_type and dict_type[TYPE] == type_name) or (
@@ -59,6 +64,11 @@ def get_type(types):
 
 
 def get_enum_class(enum_type):
+    """
+        The fields processed ty this module have already been parsed by fastavro.
+        Fastavro alters the 'name' property of the enum type to be prefixed with
+        the namespace of the schema.  This is what we're after here.
+    """
     if isinstance(enum_type, list):
         for list_type in list(enum_type):
             if isinstance(list_type, dict) and NAME in list_type:
@@ -70,6 +80,10 @@ def get_enum_class(enum_type):
 
 
 def get_enum_symbols(enum_type):
+    """
+        Avro enums are strings and the entries are in the 'symbols' property of the
+        enum type
+    """
     if isinstance(enum_type, list):
         for list_type in list(enum_type):
             if isinstance(list_type, dict):
@@ -81,6 +95,9 @@ def get_enum_symbols(enum_type):
 
 
 def get_logical_type(types):
+    """
+        Logical types can be dates, datetimes, UUIDs etc.  
+    """
     if not isinstance(types, list) and not isinstance(types, dict):
         raise ValueError("not a logical type: {}".format(types))
     elif isinstance(types, dict):
@@ -159,6 +176,10 @@ def types_for_schema(schema):
             # enum
             elif field_type_is_of_type(field[TYPE], ENUM):
                 imports.append("from {} import {}\n".format(ENUM, ENUM_CLASS))
+                """ 
+                    the enum class name is composed the same way as the typedict
+                    name is
+                """
                 enum_class_name = "".join(
                     word[0].upper() + word[1:]
                     for word in get_enum_class(field[TYPE]).split(".")
