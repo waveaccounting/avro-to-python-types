@@ -1,4 +1,9 @@
 # Changelog
+
+## 0.7.0
+### Added
+- Optional arguments can now be skipped being passed into the TypedDict class constructor.
+- Generated code is automatically formatted with `black`.
 ## 0.6.0
 ### Changed
 - Make library compatible with Python 3.8
