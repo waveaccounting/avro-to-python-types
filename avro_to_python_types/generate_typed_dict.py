@@ -1,11 +1,11 @@
-import astor
+import astunparse
 import ast
 
 from .constants import OPTIONAL
 
 
 base = """
-class Example(TypedDict):
+class Example(TypedDict, total=False):
     foo: str
 """
 
@@ -36,7 +36,7 @@ class GenerateTypedDict:
         print(ast.dump(self.tree))
 
     def get_code(self):
-        return astor.to_source(self.tree)
+        return astunparse.unparse(self.tree)
 
     def __add_element(self, element):
         self.dict.body.append(element)
@@ -46,11 +46,3 @@ class GenerateTypedDict:
 
     def add_required_element(self, name, type):
         self.__add_element(required_element(name, type))
-
-
-def generate_typed_dict():
-    custom = GenerateTypedDict("Custom")
-    custom.add_optional_element("foo", "str")
-    custom.add_optional_element("bar", "int")
-    custom.add_required_element("baz", "int")
-    print(custom.get_code())
