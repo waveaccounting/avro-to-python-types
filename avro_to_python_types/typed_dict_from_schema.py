@@ -46,10 +46,6 @@ def field_type_is_of_type(field_type, type_name):
         return False
 
 
-def is_nested(field):
-    return field_type_is_of_type(field[TYPE], RECORD)
-
-
 def get_type(types):
     if not isinstance(types, list) and not isinstance(types, dict):
         return types
