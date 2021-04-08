@@ -92,10 +92,7 @@ def get_logical_type(types):
 
 
 def resolve_enum_str(enums: list):
-    if len(enums) > 0:
-        return "".join(enums)
-    else:
-        return ""
+    return "\n\n".join(enums) if len(enums) > 0 else ""
 
 
 def _dedupe_ast(tree):
