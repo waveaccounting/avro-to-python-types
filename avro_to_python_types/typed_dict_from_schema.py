@@ -64,7 +64,7 @@ def get_type(types):
 
 def get_enum_class(enum_type):
     """
-    The fields processed ty this module have already been parsed by fastavro.
+    The fields processed by this module have already been parsed by fastavro.
     Fastavro alters the 'name' property of the enum type to be prefixed with
     the namespace of the schema.  This is what we're after here.
     """
