@@ -221,7 +221,8 @@ def types_for_schema(schema):
         + astunparse.unparse(_dedupe_ast(tree)))
     formatted_code = black.format_str(generated_code, mode=black.FileMode())
     return formatted_code
-    
+
+
 def typed_dict_from_schema_string(schema_string):
     schema = parse_schema(json.loads(schema_string))
     return types_for_schema(schema)
