@@ -216,9 +216,11 @@ def types_for_schema(schema):
 
     body.append(main_type.tree)
     imports = sorted(list(set(imports)))
-    generated_code = ("".join(imports)
+    generated_code = (
+        "".join(imports)
         + resolve_enum_str(enums)
-        + astunparse.unparse(_dedupe_ast(tree)))
+        + astunparse.unparse(_dedupe_ast(tree))
+    )
     formatted_code = black.format_str(generated_code, mode=black.FileMode())
     return formatted_code
 
