@@ -238,7 +238,6 @@ def types_for_schema(schema):
                         our_type.add_required_element(
                             name, f"list({prim_to_type[items_type]})"
                         )
-
             # primitive
             else:
                 _type = get_type(field[TYPE])
