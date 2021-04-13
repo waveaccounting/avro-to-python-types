@@ -68,7 +68,7 @@ class CommonChildC(TypedDict, total=False):
     weight: Decimal
     timestamp_of_first_checkup: Optional[datetime]
     school: CommonSchool
-    eyeclolor: Optional[CommonEyeColor]
+    eye_color: Optional[CommonEyeColor]
 '''
 
 snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas domain.Parent.avsc'] = '''from datetime import date
