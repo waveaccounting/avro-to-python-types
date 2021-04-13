@@ -1,0 +1,54 @@
+{
+    "namespace": "com.wave",
+    "type": "record",
+    "doc": "This Schema describes about Product",
+    "name": "Product",
+    "fields": [
+        {
+            "name": "product_id",
+            "type": "long"
+        },
+        {
+            "name": "product_name",
+            "type": "string",
+            "doc": "This is the name of the product"
+        },
+        {
+            "name": "product_description",
+            "type": [
+                "string",
+                "null"
+            ],
+            "default": ""
+        },
+        {
+            "name": "product_status",
+            "type": {
+                "name": "product_status",
+                "type": "enum",
+                "symbols": [
+                    "AVAILABLE",
+                    "OUT_OF_STOCK",
+                    "ONLY_FEW_LEFT"
+                ]
+            },
+            "default": "AVAILABLE"
+        },
+        {
+            "name": "product_category",
+            "type": {
+                "type": "array",
+                "items": "string"
+            },
+            "doc": "This contains array of categories"
+        },
+        {
+            "name": "price",
+            "type": "float"
+        },
+        {
+            "name": "product_hash",
+            "type": "string"
+        }
+    ]
+}

@@ -7,9 +7,10 @@ import snapshottest
 
 test_schema_files = glob.glob("tests/test_cases/*.avsc")
 expandable_schema_files = glob.glob("tests/test_cases_expandable/*.avsc")
+shopping_cart_files = glob.glob("tests/test_shopping_cart/*.avsc")
 
 
-class SnapshotTypedDictFromSchemaFile(snapshottest.TestCase):
+class SnapshotTypedDictFromOrder(snapshottest.TestCase):
     def test_snapshot_self_contained_schemas(self):
         for test_schema_file in test_schema_files:
             test_output = typed_dict_from_schema_file(test_schema_file)
@@ -20,6 +21,16 @@ class SnapshotTypedDictFromSchemaFile(snapshottest.TestCase):
         for test_schema_file in expandable_schema_files:
             test_output = typed_dict_from_schema_file(test_schema_file)
             schema_name = test_schema_file.rsplit("/", 1)[-1]
+            self.assertMatchSnapshot(test_output, schema_name)
+
+
+class SnapshotTypedDictArrayFromSchemaFile(snapshottest.TestCase):
+    def test_array_map_schemas(self):
+        for test_schema_file in shopping_cart_files:
+            test_output = typed_dict_from_schema_file(test_schema_file)
+            schema_name = test_schema_file.rsplit("/", 1)[-1]
+            with open(f"/tmp/wcn/{schema_name}.py", "w") as tstfile:
+                tstfile.write(test_output)
             self.assertMatchSnapshot(test_output, schema_name)
 
 
