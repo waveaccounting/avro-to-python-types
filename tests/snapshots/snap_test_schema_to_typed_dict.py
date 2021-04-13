@@ -44,7 +44,20 @@ from typing import Optional, TypedDict
 from uuid import UUID
 
 
-class CommonChildB(TypedDict, total=False):
+class CommonSchool(Enum):
+    StBonifice = StBonifice
+    HogWarts = HogWarts
+    HardKnocks = HardKnocks
+    UnseenUniversity = UnseenUniversity
+
+
+class CommonEyeColor(Enum):
+    green = green
+    brown = brown
+    blue = blue
+
+
+class CommonChildC(TypedDict, total=False):
     streetaddress: Optional[str]
     city: Optional[str]
     birthdate: date
