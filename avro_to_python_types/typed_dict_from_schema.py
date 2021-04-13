@@ -1,6 +1,7 @@
 from .constants import OPTIONAL
 from .generate_typed_dict import GenerateTypedDict
 from .schema_mapping import prim_to_type, logical_to_python_type
+from enum import Enum
 from fastavro.schema import load_schema, expand_schema, parse_schema
 import ast
 import astunparse
@@ -8,16 +9,21 @@ import black
 import json
 
 from avro_to_python_types.constants import (
-    ENUM,
     ENUM_CLASS,
     FIELDS,
     LOGICAL_TYPE,
     NAME,
     NULL,
-    RECORD,
     SYMBOLS,
     TYPE,
+    ITEMS,
 )
+
+
+class AvroSubType(Enum):
+    ENUM = "enum"
+    RECORD = "record"
+    ARRAY = "array"
 
 
 def is_nullable(field):
@@ -93,6 +99,22 @@ def get_enum_symbols(enum_type):
         raise Exception("invalid schema, enum type has no name")
 
 
+def get_array_items(array_type):
+    """
+    Return the item type for the array.  Either a reference to a composite obj
+    or a primative
+
+    """
+    if isinstance(array_type, list):
+        for list_type in list(array_type):
+            if isinstance(list_type, dict) and ITEMS in array_type:
+                return list_type[ITEMS]
+    elif isinstance(array_type, dict) and ITEMS in array_type:
+        return array_type[ITEMS]
+    else:
+        raise Exception("invalid schema, array type has no items")
+
+
 def get_logical_type(types):
     """
     Logical types can be dates, datetimes, UUIDs etc.
@@ -152,7 +174,7 @@ def types_for_schema(schema):
         for field in record_schema[FIELDS]:
             name = field[NAME]
             # nested
-            if field_type_is_of_type(field[TYPE], RECORD):
+            if field_type_is_of_type(field[TYPE], AvroSubType.RECORD.value):
                 nested = type_for_schema_record(field[TYPE], imports, enums)
                 body.append(nested.tree)
                 if is_nullable(field):
@@ -173,10 +195,12 @@ def types_for_schema(schema):
                 else:
                     our_type.add_required_element(name, logical_type.split(".")[1])
             # enum
-            elif field_type_is_of_type(field[TYPE], ENUM):
-                imports.append("from {} import {}\n".format(ENUM, ENUM_CLASS))
+            elif field_type_is_of_type(field[TYPE], AvroSubType.ENUM.value):
+                imports.append(
+                    "from {} import {}\n".format(AvroSubType.ENUM.value, ENUM_CLASS)
+                )
                 """ 
-                    the enum class name is composed the same way as the typedict
+                    The enum class name is composed the same way as the typedict
                     name is
                 """
                 enum_class_name = "".join(
@@ -185,13 +209,35 @@ def types_for_schema(schema):
                 )
                 enum_class = f"class {enum_class_name}(Enum):\n"
                 for e in get_enum_symbols(field[TYPE]):
-                    enum_class += f"    {e} = {e}\n"
+                    enum_class += f"    {e} = '{e}'\n"
                 enum_class += "\n\n"
                 enums.append(enum_class)
                 if is_nullable(field):
                     our_type.add_optional_element(name, enum_class_name)
                 else:
                     our_type.add_required_element(name, enum_class_name)
+            # array
+            elif field_type_is_of_type(field[TYPE], AvroSubType.ARRAY.value):
+                """
+                Arrays are either primitive types or nested records
+                """
+                items_type = get_array_items(field[TYPE])
+                if field_type_is_of_type(items_type, AvroSubType.RECORD.value):
+                    nested = type_for_schema_record(items_type, imports, enums)
+                    body.append(nested.tree)
+                    if is_nullable(field):
+                        our_type.add_optional_element(name, f"list({nested.name})")
+                    else:
+                        our_type.add_required_element(name, f"list({nested.name})")
+                else:
+                    if is_nullable(field):
+                        our_type.add_optional_element(
+                            name, f"list({prim_to_type[items_type]})"
+                        )
+                    else:
+                        our_type.add_required_element(
+                            name, f"list({prim_to_type[items_type]})"
+                        )
             # primitive
             else:
                 _type = get_type(field[TYPE])

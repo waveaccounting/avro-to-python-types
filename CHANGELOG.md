@@ -1,4 +1,8 @@
 # Changelog
+## 0.9.0
+### Changed
+- Added array type support
+
 ## 0.8.0
 ### Changed
 - Added enum type support
