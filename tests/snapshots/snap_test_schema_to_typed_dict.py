@@ -143,16 +143,16 @@ from uuid import UUID
 
 
 class CommonSchool(Enum):
-    StBonifice = StBonifice
-    HogWarts = HogWarts
-    HardKnocks = HardKnocks
-    UnseenUniversity = UnseenUniversity
+    StBonifice = "StBonifice"
+    HogWarts = "HogWarts"
+    HardKnocks = "HardKnocks"
+    UnseenUniversity = "UnseenUniversity"
 
 
 class CommonEyeColor(Enum):
-    green = green
-    brown = brown
-    blue = blue
+    green = "green"
+    brown = "brown"
+    blue = "blue"
 
 
 class CommonChildC(TypedDict, total=False):
@@ -166,7 +166,7 @@ class CommonChildC(TypedDict, total=False):
     weight: Decimal
     timestamp_of_first_checkup: Optional[datetime]
     school: CommonSchool
-    eyeclolor: Optional[CommonEyeColor]
+    eye_color: Optional[CommonEyeColor]
 '''
 
 snapshots['SnapshotTypedDictFromOrder::test_snapshot_expandable_schemas domain.Parent.avsc'] = '''from datetime import date

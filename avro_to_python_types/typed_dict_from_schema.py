@@ -9,7 +9,6 @@ import black
 import json
 
 from avro_to_python_types.constants import (
-    ENUM,
     ENUM_CLASS,
     FIELDS,
     LOGICAL_TYPE,
@@ -25,11 +24,6 @@ class AvroSubType(Enum):
     ENUM = "enum"
     RECORD = "record"
     ARRAY = "array"
-
-    RECORD,
-    SYMBOLS,
-    TYPE,
-)
 
 
 def is_nullable(field):

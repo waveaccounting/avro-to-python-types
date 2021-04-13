@@ -29,8 +29,6 @@ class SnapshotTypedDictArrayFromSchemaFile(snapshottest.TestCase):
         for test_schema_file in shopping_cart_files:
             test_output = typed_dict_from_schema_file(test_schema_file)
             schema_name = test_schema_file.rsplit("/", 1)[-1]
-            with open(f"/tmp/wcn/{schema_name}.py", "w") as tstfile:
-                tstfile.write(test_output)
             self.assertMatchSnapshot(test_output, schema_name)
 
 
