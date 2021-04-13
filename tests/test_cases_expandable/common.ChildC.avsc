@@ -1,7 +1,7 @@
 {
   "namespace": "common",
   "type": "record",
-  "name": "ChildB",
+  "name": "ChildC",
   "fields": [
     { "name": "streetaddress", "type": ["null","string"] },
     { "name": "city", "type":[ "string","null"] },
@@ -10,6 +10,9 @@
     { "name": "time_of_day_birth", "type":[ { "type": "int", "logicalType":"time-millis" },"null"]},
     { "name": "timestamp_of_birth", "type": { "type": "long", "logicalType":"timestamp-millis" }},
     { "name": "uuid_of_birth_record", "type": { "type": "string", "logicalType":"uuid" }},
-    { "name": "weight", "type": {"type": "bytes", "logicalType":"decimal" ,"precision": 5,"scale":2}}
+    { "name": "weight", "type": {"type": "bytes", "logicalType":"decimal" ,"precision": 5,"scale":2}},
+    { "name": "timestamp_of_first_checkup", "type": ["null", { "type": "long", "logicalType":"timestamp-millis", "default": "null"}]},
+    { "name": "school", "default": "HogWarts", "type": {"type": "enum", "name": "School", "symbols": ["StBonifice", "HogWarts", "HardKnocks", "UnseenUniversity"]}},
+    { "name": "eye_color", "default": null, "type": ["null", {"type": "enum", "name": "EyeColor", "symbols": ["green", "brown", "blue"]}]}
   ]
 }

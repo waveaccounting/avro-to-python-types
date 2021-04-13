@@ -39,11 +39,25 @@ snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas com
 from datetime import datetime
 from datetime import time
 from decimal import Decimal
+from enum import Enum
 from typing import Optional, TypedDict
 from uuid import UUID
 
 
-class CommonChildB(TypedDict, total=False):
+class CommonSchool(Enum):
+    StBonifice = StBonifice
+    HogWarts = HogWarts
+    HardKnocks = HardKnocks
+    UnseenUniversity = UnseenUniversity
+
+
+class CommonEyeColor(Enum):
+    green = green
+    brown = brown
+    blue = blue
+
+
+class CommonChildC(TypedDict, total=False):
     streetaddress: Optional[str]
     city: Optional[str]
     birthdate: date
@@ -52,6 +66,9 @@ class CommonChildB(TypedDict, total=False):
     timestamp_of_birth: datetime
     uuid_of_birth_record: UUID
     weight: Decimal
+    timestamp_of_first_checkup: Optional[datetime]
+    school: CommonSchool
+    eye_color: Optional[CommonEyeColor]
 '''
 
 snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas domain.Parent.avsc'] = '''from datetime import date

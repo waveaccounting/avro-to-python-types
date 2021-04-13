@@ -7,57 +7,108 @@ import astunparse
 import black
 import json
 
+from avro_to_python_types.constants import (
+    ENUM,
+    ENUM_CLASS,
+    FIELDS,
+    LOGICAL_TYPE,
+    NAME,
+    NULL,
+    RECORD,
+    SYMBOLS,
+    TYPE,
+)
+
 
 def is_nullable(field):
-    if isinstance(field["type"], list):
-        for ftype in field["type"]:
-            if ftype == "null":
+    if isinstance(field[TYPE], list):
+        for ftype in field[TYPE]:
+            if ftype == NULL:
                 return True
     return False
 
 
-def is_nested(field):
-    if isinstance(field["type"], dict) and not is_logical_type(field["type"]):
-        return True
-    return False
+def field_type_is_of_type(field_type, type_name):
+    """
+    Check that the field type has a particular type, or a list with that type
+    Compare the type of the dict representing this object's type against the
+    provided type_name.  So this generic func can be used to detect many
+    different types.
+    """
 
+    def dict_type_is_of_type(dict_type, type_name):
+        return (TYPE in dict_type and dict_type[TYPE] == type_name) or (
+            type_name in dict_type
+        )  # logicalType
 
-def is_logical_type(field_type):
     if isinstance(field_type, list):
-        for ftype in field_type:
-            if ftype != "null" and isinstance(ftype, dict):
-                return "logicalType" in ftype
+        for type_from_list in list(field_type):
+            if isinstance(type_from_list, dict):
+                return dict_type_is_of_type(type_from_list, type_name)
     elif isinstance(field_type, dict):
-        return "logicalType" in field_type
-    return False
+        return dict_type_is_of_type(field_type, type_name)
+    else:
+        return False
 
 
 def get_type(types):
     if not isinstance(types, list) and not isinstance(types, dict):
         return types
     elif isinstance(types, dict):
-        return types["type"]
+        return types[TYPE]
     for ftype in types:
-        if ftype != "null":
+        if ftype != NULL:
             return ftype
     raise ValueError("no valid type in list: {}".format(types))
 
 
+def get_enum_class(enum_type):
+    """
+    The fields processed by this module have already been parsed by fastavro.
+    Fastavro alters the 'name' property of the enum type to be prefixed with
+    the namespace of the schema.  This is what we're after here.
+    """
+    if isinstance(enum_type, list):
+        for list_type in list(enum_type):
+            if isinstance(list_type, dict) and NAME in list_type:
+                return list_type[NAME]
+    elif isinstance(enum_type, dict) and NAME in enum_type:
+        return enum_type[NAME]
+    else:
+        raise Exception("invalid schema, enum type has no name")
+
+
+def get_enum_symbols(enum_type):
+    """
+    Avro enums are strings and the entries are in the 'symbols' property of the
+    enum type
+    """
+    if isinstance(enum_type, list):
+        for list_type in list(enum_type):
+            if isinstance(list_type, dict):
+                return list_type[SYMBOLS]
+    elif isinstance(enum_type, dict) and NAME in enum_type:
+        return enum_type[SYMBOLS]
+    else:
+        raise Exception("invalid schema, enum type has no name")
+
+
 def get_logical_type(types):
+    """
+    Logical types can be dates, datetimes, UUIDs etc.
+    """
     if not isinstance(types, list) and not isinstance(types, dict):
         raise ValueError("not a logical type: {}".format(types))
     elif isinstance(types, dict):
-        return types["logicalType"]
+        return types[LOGICAL_TYPE]
     for ftype in types:
         if isinstance(ftype, dict):
-            return ftype["logicalType"]
-    raise ValueError("unexpected error in logical type: {}".format(types))
+            return ftype[LOGICAL_TYPE]
+    raise ValueError(f"unexpected error in logical type: {types}")
 
 
-def is_logical(field):
-    return (
-        isinstance(field["type"], dict) or isinstance(field["type"], list)
-    ) and is_logical_type(field["type"])
+def resolve_enum_str(enums: list):
+    return "\n\n".join(enums) if len(enums) > 0 else ""
 
 
 def _dedupe_ast(tree):
@@ -93,23 +144,25 @@ def types_for_schema(schema):
     tree = ast.Module(body)
     body = tree.body
 
-    def type_for_schema_record(record_schema, imports):
+    def type_for_schema_record(record_schema, imports, enums):
         type_name = "".join(
             word[0].upper() + word[1:] for word in record_schema["name"].split(".")
         )
         our_type = GenerateTypedDict(type_name)
-        for field in record_schema["fields"]:
-            name = field["name"]
-            if is_nested(field):
-                nested = type_for_schema_record(field["type"], imports)
+        for field in record_schema[FIELDS]:
+            name = field[NAME]
+            # nested
+            if field_type_is_of_type(field[TYPE], RECORD):
+                nested = type_for_schema_record(field[TYPE], imports, enums)
                 body.append(nested.tree)
                 if is_nullable(field):
                     our_type.add_optional_element(name, nested.name)
                 else:
                     our_type.add_required_element(name, nested.name)
                 continue
-            if is_logical(field):
-                logical_type = logical_to_python_type[get_logical_type(field["type"])]
+            # logical
+            if field_type_is_of_type(field[TYPE], LOGICAL_TYPE):
+                logical_type = logical_to_python_type[get_logical_type(field[TYPE])]
                 imports.append(
                     "from {} import {}\n".format(
                         logical_type.split(".")[0], logical_type.split(".")[1]
@@ -119,16 +172,38 @@ def types_for_schema(schema):
                     our_type.add_optional_element(name, logical_type.split(".")[1])
                 else:
                     our_type.add_required_element(name, logical_type.split(".")[1])
-            else:
-                type = get_type(field["type"])
+            # enum
+            elif field_type_is_of_type(field[TYPE], ENUM):
+                imports.append("from {} import {}\n".format(ENUM, ENUM_CLASS))
+                """ 
+                    the enum class name is composed the same way as the typedict
+                    name is
+                """
+                enum_class_name = "".join(
+                    word[0].upper() + word[1:]
+                    for word in get_enum_class(field[TYPE]).split(".")
+                )
+                enum_class = f"class {enum_class_name}(Enum):\n"
+                for e in get_enum_symbols(field[TYPE]):
+                    enum_class += f"    {e} = {e}\n"
+                enum_class += "\n\n"
+                enums.append(enum_class)
                 if is_nullable(field):
-                    our_type.add_optional_element(name, prim_to_type[type])
+                    our_type.add_optional_element(name, enum_class_name)
                 else:
-                    our_type.add_required_element(name, prim_to_type[type])
+                    our_type.add_required_element(name, enum_class_name)
+            # primitive
+            else:
+                _type = get_type(field[TYPE])
+                if is_nullable(field):
+                    our_type.add_optional_element(name, prim_to_type[_type])
+                else:
+                    our_type.add_required_element(name, prim_to_type[_type])
         return our_type
 
     imports = []
-    main_type = type_for_schema_record(schema, imports)
+    enums = []
+    main_type = type_for_schema_record(schema, imports, enums)
 
     additional_types = []
     # import the Optional type only if required
@@ -141,7 +216,11 @@ def types_for_schema(schema):
 
     body.append(main_type.tree)
     imports = sorted(list(set(imports)))
-    generated_code = "".join(imports) + astunparse.unparse(_dedupe_ast(tree))
+    generated_code = (
+        "".join(imports)
+        + resolve_enum_str(enums)
+        + astunparse.unparse(_dedupe_ast(tree))
+    )
     formatted_code = black.format_str(generated_code, mode=black.FileMode())
     return formatted_code
 
