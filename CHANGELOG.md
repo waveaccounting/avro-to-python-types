@@ -1,7 +1,7 @@
 # Changelog
 ## 0.8.0
 ### Changed
-- Added enum support
+- Added enum type support
 
 ## 0.7.0
 ### Added
