@@ -1,0 +1,27 @@
+{
+    "namespace": "com.wave",
+    "type": "record",
+    "doc": "This Schema describes about Order",
+    "name": "Order",
+    "fields": [
+        {
+            "name": "order_id",
+            "type": "long"
+        },
+        {
+            "name": "customer_id",
+            "type": "long"
+        },
+        {
+            "name": "total",
+            "type": "float"
+        },
+        {
+            "name": "order_details",
+            "type": {
+                "type": "array",
+                "items": "com.wave.OrderDetail"
+            }
+        }
+    ]
+}
