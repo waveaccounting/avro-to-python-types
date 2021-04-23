@@ -376,6 +376,39 @@ class DomainParent(TypedDict, total=False):
     favorite_color: Optional[str]
 '''
 
+snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_schema_references com.wave.Order.avsc'] = '''from enum import Enum
+from typing import TypedDict
+
+
+class ComWaveProduct_status(Enum):
+    AVAILABLE = "AVAILABLE"
+    OUT_OF_STOCK = "OUT_OF_STOCK"
+    ONLY_FEW_LEFT = "ONLY_FEW_LEFT"
+
+
+class ComWaveProduct(TypedDict, total=False):
+    product_id: int
+    product_name: str
+    product_description: Optional[str]
+    product_status: ComWaveProduct_status
+    product_category: list(str)
+    price: float
+    product_hash: str
+
+
+class ComWaveOrderDetail(TypedDict, total=False):
+    quantity: int
+    total: float
+    product_detail: ComWaveProduct
+
+
+class ComWaveOrder(TypedDict, total=False):
+    order_id: int
+    customer_id: int
+    total: float
+    order_details: list(ComWaveOrderDetail)
+'''
+
 snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_self_contained_schemas nested_record.avsc'] = '''from typing import Optional, TypedDict
 
 
