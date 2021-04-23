@@ -267,7 +267,8 @@ def types_for_schema(schema):
                 else:
                     if isinstance(field[TYPE],list):
                         for fld in field[TYPE]:
-                            field_type = fld if fld != NULL else None
+                            if fld != NULL:
+                                field_type = fld 
                     else:
                         field_type = get_type(field[TYPE])
                     if not field_type in prim_to_type.keys():
