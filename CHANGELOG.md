@@ -1,7 +1,7 @@
 # Changelog
 ## 0.10.0
 ### Changed
-- Added the ability to provide schema references by their file names.  Usefull when the
+- Added the ability to provide schema references by their file names.  Useful when the
 - schema types don't match the file names and fastavro can't automatically load them.
   
 ## 0.9.0
