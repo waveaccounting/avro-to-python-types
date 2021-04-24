@@ -173,8 +173,8 @@ def _dedupe_ast(tree):
 def types_for_schema(schema):
     """
     This is the main function for the module.  It will parse a schema and return a
-    concrete type which extends the TypedDict class.  It currently supports most 
-    primitive, logical, union and array types.  It does not support microsecond 
+    concrete type which extends the TypedDict class.  It currently supports most
+    primitive, logical, union and array types.  It does not support microsecond
     precision time types and durations.
     """
     body = []
