@@ -172,9 +172,10 @@ def _dedupe_ast(tree):
 
 def types_for_schema(schema):
     """
-    This is the main function for the module.  It will parse a schema and return a concrete type
-    which extends the TypedDict class.  It currently supports all primitive types as well as
-    logical types except for the microsecond precision time types.
+    This is the main function for the module.  It will parse a schema and return a
+    concrete type which extends the TypedDict class.  It currently supports most 
+    primitive, logical, union and array types.  It does not support microsecond 
+    precision time types and durations.
     """
     body = []
     tree = ast.Module(body)
@@ -188,10 +189,15 @@ def types_for_schema(schema):
             our_type = GenerateTypedDict(type_name)
             for field in record_schema[FIELDS]:
                 name = field[NAME]
-                # union with complex type
                 if field_type_is_of_type(
                     field[TYPE], AvroSubType.RECORD.value
                 ) and isinstance(field[TYPE], list):
+                    """union with complex type - This section processes the type from a
+                    union contining an expanded type, recursively.  Fastavro will expand
+                    the types for the union the first time it encounters them and use a
+                    reference thereafter.  So the first time it will be prcessed here and
+                    subsequently in the primitives section.
+                    """
                     union_field = get_union_type(field[TYPE])
                     nested = type_for_schema_record(
                         union_field, imports, enums, complex_types
@@ -202,9 +208,8 @@ def types_for_schema(schema):
                     else:
                         our_type.add_required_element(name, nested.name)
                     complex_types.append(nested.name)
-                    continue
-                # nested
-                if field_type_is_of_type(field[TYPE], AvroSubType.RECORD.value):
+                elif field_type_is_of_type(field[TYPE], AvroSubType.RECORD.value):
+                    """nested - This processes an expanded nested type recursively."""
                     nested = type_for_schema_record(
                         field[TYPE], imports, enums, complex_types
                     )
@@ -214,9 +219,10 @@ def types_for_schema(schema):
                     else:
                         our_type.add_required_element(name, nested.name)
                     complex_types.append(nested.name)
-                    continue
-                # logical
-                if field_type_is_of_type(field[TYPE], LOGICAL_TYPE):
+                elif field_type_is_of_type(field[TYPE], LOGICAL_TYPE):
+                    """logical - This section processes logical types.  This necessitates
+                    importing packages like date, datetime, uuid and decimal hence the
+                    imports collection"""
                     logical_type = logical_to_python_type[get_logical_type(field[TYPE])]
                     imports.append(
                         "from {} import {}\n".format(
@@ -227,8 +233,12 @@ def types_for_schema(schema):
                         our_type.add_optional_element(name, logical_type.split(".")[1])
                     else:
                         our_type.add_required_element(name, logical_type.split(".")[1])
-                # enum
                 elif field_type_is_of_type(field[TYPE], AvroSubType.ENUM.value):
+                    """Enumerations are processed by adding an enum class to the
+                    python file.  At the moment that means that the same enum used in
+                    different schemas will result in that enum being duplicated, but
+                    with a different name.  We can revisit that if necessary.
+                    """
                     imports.append(
                         "from {} import {}\n".format(AvroSubType.ENUM.value, ENUM_CLASS)
                     )
@@ -250,9 +260,11 @@ def types_for_schema(schema):
                     complex_types.append(enum_class_name)
                 # array
                 elif field_type_is_of_type(field[TYPE], AvroSubType.ARRAY.value):
-                    """Arrays are either primitive types or nested records"""
+                    """Array types are either primitive or complex.  Note that the
+                    element added to the ast tree is a list of some type element"""
                     items_type = get_array_items(field[TYPE])
                     if field_type_is_of_type(items_type, AvroSubType.RECORD.value):
+                        """Arrays is for a complex nested type"""
                         nested = type_for_schema_record(
                             items_type, imports, enums, complex_types
                         )
@@ -263,6 +275,7 @@ def types_for_schema(schema):
                             our_type.add_required_element(name, f"list({nested.name})")
                         complex_types.append(nested.name)
                     else:
+                        """Array is of a prmitive type"""
                         if not items_type in prim_to_type.keys():
                             items_type_name = "".join(
                                 word[0].upper() + word[1:]
@@ -281,6 +294,7 @@ def types_for_schema(schema):
                             our_type.add_required_element(name, f"list({array_type})")
                 # primitive
                 else:
+                    """Ths section process a primitive type or a named complex type."""
                     if isinstance(field[TYPE], list):
                         for fld in field[TYPE]:
                             if fld != NULL:
@@ -303,9 +317,9 @@ def types_for_schema(schema):
                     else:
                         our_type.add_required_element(name, reference_type)
         except Exception as e:
-            """The errors coming out of this code are not very helpful so this is
-            an attempt to at least point the user to the schema and field where the
-            problem is so that they can take a closer look at it"""
+            """If an error occurs while processing a field provide an error message
+            containing the schema and field where the problem is so that they
+            have a fighting chance to fix the prblem"""
             raise Exception(
                 f"Failed to transform schema: [{fullname(schema)}] field: "
                 + f"[{record_schema[NAME]}.{name}] for reason {e}"
@@ -343,7 +357,7 @@ def typed_dict_from_schema_string(schema_string):
 
 
 def typed_dict_from_schema_file(schema_path, referenced_schema_files=None):
-    if (not referenced_schema_files == None) and len(referenced_schema_files) > 0:
+    if referenced_schema_files:
         referenced_schema_files.append(schema_path)
         schema = load_schema_ordered(referenced_schema_files)
     else:
