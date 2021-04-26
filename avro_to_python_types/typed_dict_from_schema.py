@@ -182,7 +182,9 @@ def types_for_schema(schema):
     tree = ast.Module(body)
     body = tree.body
 
-    def type_for_schema_record(record_schema, imports, enums, complex_types):
+    def type_for_schema_record(
+        record_schema, imports, enums, complex_types, import_flags
+    ):
         type_name = "".join(
             word[0].upper() + word[1:] for word in record_schema["name"].split(".")
         )
@@ -201,22 +203,24 @@ def types_for_schema(schema):
                     """
                     union_field = get_union_type(field[TYPE])
                     nested = type_for_schema_record(
-                        union_field, imports, enums, complex_types
+                        union_field, imports, enums, complex_types, import_flags
                     )
                     body.append(nested.tree)
                     if is_nullable(field):
                         our_type.add_optional_element(name, nested.name)
+                        import_flags[OPTIONAL] = True
                     else:
                         our_type.add_required_element(name, nested.name)
                     complex_types.append(nested.name)
                 elif field_type_is_of_type(field[TYPE], AvroSubType.RECORD.value):
                     """nested - This processes an expanded nested type recursively."""
                     nested = type_for_schema_record(
-                        field[TYPE], imports, enums, complex_types
+                        field[TYPE], imports, enums, complex_types, import_flags
                     )
                     body.append(nested.tree)
                     if is_nullable(field):
                         our_type.add_optional_element(name, nested.name)
+                        import_flags[OPTIONAL] = True
                     else:
                         our_type.add_required_element(name, nested.name)
                     complex_types.append(nested.name)
@@ -232,6 +236,7 @@ def types_for_schema(schema):
                     )
                     if is_nullable(field):
                         our_type.add_optional_element(name, logical_type.split(".")[1])
+                        import_flags[OPTIONAL] = True
                     else:
                         our_type.add_required_element(name, logical_type.split(".")[1])
                 elif field_type_is_of_type(field[TYPE], AvroSubType.ENUM.value):
@@ -257,6 +262,7 @@ def types_for_schema(schema):
                         enums[enum_class] = enum_class
                     if is_nullable(field):
                         our_type.add_optional_element(name, enum_class_name)
+                        import_flags[OPTIONAL] = True
                     else:
                         our_type.add_required_element(name, enum_class_name)
                     complex_types.append(enum_class_name)
@@ -268,11 +274,12 @@ def types_for_schema(schema):
                     if field_type_is_of_type(items_type, AvroSubType.RECORD.value):
                         """Arrays is for a complex nested type"""
                         nested = type_for_schema_record(
-                            items_type, imports, enums, complex_types
+                            items_type, imports, enums, complex_types, import_flags
                         )
                         body.append(nested.tree)
                         if is_nullable(field):
                             our_type.add_optional_element(name, f"List[{nested.name}]")
+                            import_flags[OPTIONAL] = True
                         else:
                             our_type.add_required_element(name, f"List[{nested.name}]")
                         complex_types.append(nested.name)
@@ -292,8 +299,10 @@ def types_for_schema(schema):
                             array_type = prim_to_type[items_type]
                         if is_nullable(field):
                             our_type.add_optional_element(name, f"List[{array_type}]")
+                            import_flags[OPTIONAL] = True
                         else:
                             our_type.add_required_element(name, f"List[{array_type}]")
+                    import_flags[LIST] = True
                 # primitive
                 else:
                     """Ths section process a primitive type or a named complex type."""
@@ -316,6 +325,7 @@ def types_for_schema(schema):
                         reference_type = prim_to_type[field_type]
                     if is_nullable(field):
                         our_type.add_optional_element(name, reference_type)
+                        import_flags[OPTIONAL] = True
                     else:
                         our_type.add_required_element(name, reference_type)
         except Exception as e:
@@ -331,13 +341,16 @@ def types_for_schema(schema):
     imports = []
     enums = {}
     complex_types = []
-    main_type = type_for_schema_record(schema, imports, enums, complex_types)
+    import_flags = {OPTIONAL: False, LIST: False}
+    main_type = type_for_schema_record(
+        schema, imports, enums, complex_types, import_flags
+    )
 
     additional_types = []
     # import the Optional type only if required
-    if OPTIONAL in ast.dump(main_type.tree):
+    if import_flags[OPTIONAL]:
         additional_types.append(OPTIONAL)
-    if LIST in ast.dump(main_type.tree):
+    if import_flags[LIST]:
         additional_types.append(LIST)
     additional_types.append("TypedDict")
     additional_types_as_str = ", ".join(additional_types)

@@ -7,4 +7,4 @@ OPTIONAL = "Optional"
 SYMBOLS = "symbols"
 TYPE = "type"
 ITEMS = "items"
-LIST = 'List'
+LIST = "List"
