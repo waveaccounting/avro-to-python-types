@@ -23,6 +23,7 @@ from avro_to_python_types.constants import (
     SYMBOLS,
     TYPE,
     ITEMS,
+    LIST,
 )
 
 
@@ -271,9 +272,9 @@ def types_for_schema(schema):
                         )
                         body.append(nested.tree)
                         if is_nullable(field):
-                            our_type.add_optional_element(name, f"list({nested.name})")
+                            our_type.add_optional_element(name, f"List[{nested.name}]")
                         else:
-                            our_type.add_required_element(name, f"list({nested.name})")
+                            our_type.add_required_element(name, f"List[{nested.name}]")
                         complex_types.append(nested.name)
                     else:
                         """Array is of a prmitive type"""
@@ -290,9 +291,9 @@ def types_for_schema(schema):
                         else:
                             array_type = prim_to_type[items_type]
                         if is_nullable(field):
-                            our_type.add_optional_element(name, f"list({array_type})")
+                            our_type.add_optional_element(name, f"List[{array_type}]")
                         else:
-                            our_type.add_required_element(name, f"list({array_type})")
+                            our_type.add_required_element(name, f"List[{array_type}]")
                 # primitive
                 else:
                     """Ths section process a primitive type or a named complex type."""
@@ -336,6 +337,8 @@ def types_for_schema(schema):
     # import the Optional type only if required
     if OPTIONAL in ast.dump(main_type.tree):
         additional_types.append(OPTIONAL)
+    if LIST in ast.dump(main_type.tree):
+        additional_types.append(LIST)
     additional_types.append("TypedDict")
     additional_types_as_str = ", ".join(additional_types)
 
