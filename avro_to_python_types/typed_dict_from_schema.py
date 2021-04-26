@@ -3,11 +3,11 @@ from .generate_typed_dict import GenerateTypedDict
 from .schema_mapping import prim_to_type, logical_to_python_type
 from enum import Enum
 from fastavro.schema import (
-    load_schema,
     expand_schema,
-    parse_schema,
-    load_schema_ordered,
     fullname,
+    load_schema,
+    load_schema_ordered,
+    parse_schema,
 )
 import ast
 import astunparse
@@ -196,7 +196,7 @@ def types_for_schema(schema):
                     field[TYPE], AvroSubType.RECORD.value
                 ) and isinstance(field[TYPE], list):
                     """union with complex type - This section processes the type from a
-                    union contining an expanded type, recursively.  Fastavro will expand
+                    union containing an expanded type, recursively.  Fastavro will expand
                     the types for the union the first time it encounters them and use a
                     reference thereafter.  So the first time it will be prcessed here and
                     subsequently in the primitives section.
