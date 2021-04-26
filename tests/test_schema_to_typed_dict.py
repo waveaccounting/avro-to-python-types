@@ -23,6 +23,16 @@ class SnapshotTypedDictFromSchemaFile(snapshottest.TestCase):
             schema_name = test_schema_file.rsplit("/", 1)[-1]
             self.assertMatchSnapshot(test_output, schema_name)
 
+    def test_snapshot_schema_references(self):
+        references = [
+            "tests/test_shopping_cart/com.wave.Product.avsc",
+            "tests/test_shopping_cart/com.wave.OrderDetail.avsc",
+        ]
+        test_schema_file = "tests/test_shopping_cart/com.wave.Order.avsc"
+        test_output = typed_dict_from_schema_file(test_schema_file, references)
+        schema_name = test_schema_file.rsplit("/", 1)[-1]
+        self.assertMatchSnapshot(test_output, schema_name)
+
 
 class SnapshotTypedDictArrayFromSchemaFile(snapshottest.TestCase):
     def test_array_map_schemas(self):
