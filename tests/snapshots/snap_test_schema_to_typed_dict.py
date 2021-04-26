@@ -8,7 +8,7 @@ from snapshottest import Snapshot
 snapshots = Snapshot()
 
 snapshots['SnapshotTypedDictArrayFromSchemaFile::test_array_map_schemas com.wave.Order.avsc'] = '''from enum import Enum
-from typing import List, TypedDict
+from typing import Optional, List, TypedDict
 
 
 class ComWaveProduct_status(Enum):
@@ -41,7 +41,7 @@ class ComWaveOrder(TypedDict, total=False):
 '''
 
 snapshots['SnapshotTypedDictArrayFromSchemaFile::test_array_map_schemas com.wave.OrderDetail.avsc'] = '''from enum import Enum
-from typing import TypedDict
+from typing import Optional, List, TypedDict
 
 
 class ComWaveProduct_status(Enum):
@@ -188,7 +188,7 @@ class DomainParent(TypedDict, total=False):
 '''
 
 snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_schema_references com.wave.Order.avsc'] = '''from enum import Enum
-from typing import List, TypedDict
+from typing import Optional, List, TypedDict
 
 
 class ComWaveProduct_status(Enum):
