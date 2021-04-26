@@ -143,8 +143,8 @@ def get_logical_type(types):
     raise ValueError(f"unexpected error in logical type: {types}")
 
 
-def resolve_enum_str(enums: list):
-    return "\n\n".join(enums) if len(enums) > 0 else ""
+def resolve_enum_str(enums: dict):
+    return "\n\n".join(enums.values()) if len(enums) > 0 else ""
 
 
 def _dedupe_ast(tree):
@@ -249,10 +249,11 @@ def types_for_schema(schema):
                         for word in get_enum_class(field[TYPE]).split(".")
                     )
                     enum_class = f"class {enum_class_name}(Enum):\n"
-                    for e in get_enum_symbols(field[TYPE]):
-                        enum_class += f"    {e} = '{e}'\n"
-                    enum_class += "\n\n"
-                    enums.append(enum_class)
+                    if not enum_class in enums.keys():
+                        for e in get_enum_symbols(field[TYPE]):
+                            enum_class += f"    {e} = '{e}'\n"
+                        enum_class += "\n\n"
+                        enums[enum_class] = enum_class
                     if is_nullable(field):
                         our_type.add_optional_element(name, enum_class_name)
                     else:
@@ -327,7 +328,7 @@ def types_for_schema(schema):
         return our_type
 
     imports = []
-    enums = []
+    enums = {}
     complex_types = []
     main_type = type_for_schema_record(schema, imports, enums, complex_types)
 
