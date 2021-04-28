@@ -1,4 +1,3 @@
-import astunparse
 import ast
 
 from .constants import OPTIONAL
@@ -36,7 +35,7 @@ class GenerateTypedDict:
         print(ast.dump(self.tree))
 
     def get_code(self):
-        return astunparse.unparse(self.tree)
+        return ast.unparse(self.tree)
 
     def __add_element(self, element):
         self.dict.body.append(element)

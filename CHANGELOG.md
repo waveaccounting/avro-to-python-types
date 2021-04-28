@@ -1,4 +1,11 @@
 # Changelog
+
+## 0.11.0
+### Removed
+- `astunparse` has been removed as the built-in `ast` module supports unparsing ASTs, as of Python 3.9.
+### Changed
+- Refactoring of AST deduplication logic.
+  
 ## 0.10.0
 ### Changed
 - Added the ability to provide schema references by their file names.  Useful when the

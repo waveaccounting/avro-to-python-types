@@ -10,7 +10,6 @@ from fastavro.schema import (
     parse_schema,
 )
 import ast
-import astunparse
 import black
 import json
 
@@ -157,17 +156,21 @@ def _dedupe_ast(tree):
     # https://fastavro.readthedocs.io/en/latest/schema.html#fastavro._schema_py.expand_schema
     ###
 
-    all_types = tree.body
-    existing_type_names = []
-    deduped_types = []
-    for current_type in all_types:
-        type_name = current_type.body[0].name
-        if type_name in existing_type_names:
-            continue
-        existing_type_names.append(type_name)
-        deduped_types.append(current_type)
+    class DuplicatedClassFilter(ast.NodeTransformer):
+        def __init__(self):
+            super().__init__()
+            self.type_list = []
 
-    tree.body = deduped_types
+        def visit_ClassDef(self, node):
+            class_name = node.name
+            if class_name in self.type_list:
+                return None
+            self.type_list.append(class_name)
+            return node
+
+    tree = DuplicatedClassFilter().visit(tree)
+    tree = ast.fix_missing_locations(tree)
+
     return tree
 
 
@@ -360,9 +363,7 @@ def types_for_schema(schema):
     body.append(main_type.tree)
     imports = sorted(list(set(imports)))
     generated_code = (
-        "".join(imports)
-        + resolve_enum_str(enums)
-        + astunparse.unparse(_dedupe_ast(tree))
+        "".join(imports) + resolve_enum_str(enums) + ast.unparse(_dedupe_ast(tree).body)
     )
     formatted_code = black.format_str(generated_code, mode=black.FileMode())
     return formatted_code
