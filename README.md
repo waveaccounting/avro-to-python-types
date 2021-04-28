@@ -116,3 +116,7 @@ class ExampleUser(TypedDict, total=False):
 ## Testing
 
 To run unit tests, run `poetry run pytest`.
+
+## Requirements
+
+Python 3.9 or greater.
