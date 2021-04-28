@@ -30,7 +30,10 @@ for schema_file in schema_files:
 For a real world example of syncing a directory of schemas into a directory of matching python typed dictionaries
 check out the example app [here](/examples/sync_types)
 
-To try it out, simply clone this repo and run
+To try it out, simply clone this repo and run:
+
+`poetry env use 3.9`
+- This must be done as this library only supports Python 3.9 and above for type generation. You can still use this library in apps that use a lower Python version, as long as Python 3.9 is the active version when the types are generated (either locally or in your CI system).
 
 `poetry install`
 
