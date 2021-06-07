@@ -1,4 +1,7 @@
 # Changelog
+## 0.11.0
+### Changed
+- Moved black from prod to dev dependencies and update lock file.
 
 ## 0.11.0
 ### Removed
