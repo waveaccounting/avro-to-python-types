@@ -206,9 +206,7 @@ def types_for_schema(schema):
     tree = ast.Module(body)
     body = tree.body
 
-    def type_for_schema_record(
-        record_schema, imports, enums, complex_types
-    ):
+    def type_for_schema_record(record_schema, imports, enums, complex_types):
         type_name = "".join(
             word[0].upper() + word[1:] for word in record_schema["name"].split(".")
         )
@@ -334,10 +332,14 @@ def types_for_schema(schema):
                         body.append(nested.tree)
                         if is_nullable(field):
                             """Avro map keys are always strings."""
-                            our_type.add_optional_element(name, f"Dict[str, {nested.name}]")
+                            our_type.add_optional_element(
+                                name, f"Dict[str, {nested.name}]"
+                            )
                             imports["typing"].add(OPTIONAL)
                         else:
-                            our_type.add_required_element(name, f"Dict[str, {nested.name}]")
+                            our_type.add_required_element(
+                                name, f"Dict[str, {nested.name}]"
+                            )
                         complex_types.append(nested.name)
                     else:
                         """Map is of a primitive type"""
@@ -354,10 +356,14 @@ def types_for_schema(schema):
                         else:
                             array_type = prim_to_type[values_type]
                         if is_nullable(field):
-                            our_type.add_optional_element(name, f"Dict[str, {array_type}]")
+                            our_type.add_optional_element(
+                                name, f"Dict[str, {array_type}]"
+                            )
                             imports["typing"].add(OPTIONAL)
                         else:
-                            our_type.add_required_element(name, f"Dict[str, {array_type}]")
+                            our_type.add_required_element(
+                                name, f"Dict[str, {array_type}]"
+                            )
                     imports["typing"].add(DICT)
                 # fixed
                 elif field_type_is_of_type(field[TYPE], AvroSubType.FIXED.value):
@@ -408,9 +414,7 @@ def types_for_schema(schema):
     imports["typing"].add("TypedDict")
     enums = {}
     complex_types = []
-    main_type = type_for_schema_record(
-        schema, imports, enums, complex_types
-    )
+    main_type = type_for_schema_record(schema, imports, enums, complex_types)
 
     import_lines = []
     for module, classes in imports.items():
@@ -420,8 +424,10 @@ def types_for_schema(schema):
 
     body.append(main_type.tree)
 
-    generated_code = "\n".join([import_code, resolve_enum_str(enums), ast.unparse(_dedupe_ast(tree).body)])
-    
+    generated_code = "\n".join(
+        [import_code, resolve_enum_str(enums), ast.unparse(_dedupe_ast(tree).body)]
+    )
+
     formatted_code = black.format_str(generated_code, mode=black.Mode())
     return formatted_code
 
