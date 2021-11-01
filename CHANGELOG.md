@@ -1,4 +1,13 @@
 # Changelog
+  
+## 0.12.0
+### Added
+- Support for the "map" and "fixed" avro types.
+### Changed
+- Alphabetically sort generated imports.
+- Gather imports from the same module onto a single line.
+### Fixed
+- An issue retrieving items from array types within lists of types.
 
 ## 0.11.2
 ### Changed

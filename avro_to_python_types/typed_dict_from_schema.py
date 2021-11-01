@@ -1,6 +1,7 @@
 from .constants import OPTIONAL
 from .generate_typed_dict import GenerateTypedDict
 from .schema_mapping import prim_to_type, logical_to_python_type
+from collections import defaultdict
 from enum import Enum
 from fastavro.schema import (
     expand_schema,
@@ -23,6 +24,8 @@ from avro_to_python_types.constants import (
     TYPE,
     ITEMS,
     LIST,
+    VALUES,
+    DICT,
 )
 
 
@@ -30,6 +33,8 @@ class AvroSubType(Enum):
     ENUM = "enum"
     RECORD = "record"
     ARRAY = "array"
+    MAP = "map"
+    FIXED = "fixed"
 
 
 def is_nullable(field):
@@ -121,12 +126,28 @@ def get_array_items(array_type):
     """
     if isinstance(array_type, list):
         for list_type in list(array_type):
-            if isinstance(list_type, dict) and ITEMS in array_type:
+            if isinstance(list_type, dict) and ITEMS in list_type:
                 return list_type[ITEMS]
     elif isinstance(array_type, dict) and ITEMS in array_type:
         return array_type[ITEMS]
     else:
         raise Exception("invalid schema, array type has no items")
+
+
+def get_map_values(map_type):
+    """
+    Return the item type for the map.  Either a reference to a composite obj
+    or a primative
+
+    """
+    if isinstance(map_type, list):
+        for list_type in list(map_type):
+            if isinstance(list_type, dict) and VALUES in list_type:
+                return list_type[VALUES]
+    elif isinstance(map_type, dict) and VALUES in map_type:
+        return map_type[VALUES]
+    else:
+        raise Exception("invalid schema, map type has no values")
 
 
 def get_logical_type(types):
@@ -185,9 +206,7 @@ def types_for_schema(schema):
     tree = ast.Module(body)
     body = tree.body
 
-    def type_for_schema_record(
-        record_schema, imports, enums, complex_types, import_flags
-    ):
+    def type_for_schema_record(record_schema, imports, enums, complex_types):
         type_name = "".join(
             word[0].upper() + word[1:] for word in record_schema["name"].split(".")
         )
@@ -206,24 +225,24 @@ def types_for_schema(schema):
                     """
                     union_field = get_union_type(field[TYPE])
                     nested = type_for_schema_record(
-                        union_field, imports, enums, complex_types, import_flags
+                        union_field, imports, enums, complex_types
                     )
                     body.append(nested.tree)
                     if is_nullable(field):
                         our_type.add_optional_element(name, nested.name)
-                        import_flags[OPTIONAL] = True
+                        imports["typing"].add(OPTIONAL)
                     else:
                         our_type.add_required_element(name, nested.name)
                     complex_types.append(nested.name)
                 elif field_type_is_of_type(field[TYPE], AvroSubType.RECORD.value):
                     """nested - This processes an expanded nested type recursively."""
                     nested = type_for_schema_record(
-                        field[TYPE], imports, enums, complex_types, import_flags
+                        field[TYPE], imports, enums, complex_types
                     )
                     body.append(nested.tree)
                     if is_nullable(field):
                         our_type.add_optional_element(name, nested.name)
-                        import_flags[OPTIONAL] = True
+                        imports["typing"].add(OPTIONAL)
                     else:
                         our_type.add_required_element(name, nested.name)
                     complex_types.append(nested.name)
@@ -232,14 +251,11 @@ def types_for_schema(schema):
                     importing packages like date, datetime, uuid and decimal hence the
                     imports collection"""
                     logical_type = logical_to_python_type[get_logical_type(field[TYPE])]
-                    imports.append(
-                        "from {} import {}\n".format(
-                            logical_type.split(".")[0], logical_type.split(".")[1]
-                        )
-                    )
+                    module, class_import = logical_type.split(".")
+                    imports[module].add(class_import)
                     if is_nullable(field):
                         our_type.add_optional_element(name, logical_type.split(".")[1])
-                        import_flags[OPTIONAL] = True
+                        imports["typing"].add(OPTIONAL)
                     else:
                         our_type.add_required_element(name, logical_type.split(".")[1])
                 elif field_type_is_of_type(field[TYPE], AvroSubType.ENUM.value):
@@ -248,9 +264,7 @@ def types_for_schema(schema):
                     different schemas will result in that enum being duplicated, but
                     with a different name.  We can revisit that if necessary.
                     """
-                    imports.append(
-                        "from {} import {}\n".format(AvroSubType.ENUM.value, ENUM_CLASS)
-                    )
+                    imports[AvroSubType.ENUM.value].add(ENUM_CLASS)
                     """ The enum class name is composed the same way as the typedict
                         name is """
                     enum_class_name = "".join(
@@ -265,7 +279,7 @@ def types_for_schema(schema):
                         enums[enum_class] = enum_class
                     if is_nullable(field):
                         our_type.add_optional_element(name, enum_class_name)
-                        import_flags[OPTIONAL] = True
+                        imports["typing"].add(OPTIONAL)
                     else:
                         our_type.add_required_element(name, enum_class_name)
                     complex_types.append(enum_class_name)
@@ -277,17 +291,17 @@ def types_for_schema(schema):
                     if field_type_is_of_type(items_type, AvroSubType.RECORD.value):
                         """Arrays is for a complex nested type"""
                         nested = type_for_schema_record(
-                            items_type, imports, enums, complex_types, import_flags
+                            items_type, imports, enums, complex_types
                         )
                         body.append(nested.tree)
                         if is_nullable(field):
                             our_type.add_optional_element(name, f"List[{nested.name}]")
-                            import_flags[OPTIONAL] = True
+                            imports["typing"].add(OPTIONAL)
                         else:
                             our_type.add_required_element(name, f"List[{nested.name}]")
                         complex_types.append(nested.name)
                     else:
-                        """Array is of a prmitive type"""
+                        """Array is of a primitive type"""
                         if not items_type in prim_to_type.keys():
                             items_type_name = "".join(
                                 word[0].upper() + word[1:]
@@ -302,10 +316,65 @@ def types_for_schema(schema):
                             array_type = prim_to_type[items_type]
                         if is_nullable(field):
                             our_type.add_optional_element(name, f"List[{array_type}]")
-                            import_flags[OPTIONAL] = True
+                            imports["typing"].add(OPTIONAL)
                         else:
                             our_type.add_required_element(name, f"List[{array_type}]")
-                    import_flags[LIST] = True
+                    imports["typing"].add(LIST)
+                # map
+                elif field_type_is_of_type(field[TYPE], AvroSubType.MAP.value):
+                    """Map types are either primitive or complex."""
+                    values_type = get_map_values(field[TYPE])
+                    if field_type_is_of_type(values_type, AvroSubType.RECORD.value):
+                        """Map is for a complex nested type"""
+                        nested = type_for_schema_record(
+                            values_type, imports, enums, complex_types
+                        )
+                        body.append(nested.tree)
+                        if is_nullable(field):
+                            """Avro map keys are always strings."""
+                            our_type.add_optional_element(
+                                name, f"Dict[str, {nested.name}]"
+                            )
+                            imports["typing"].add(OPTIONAL)
+                        else:
+                            our_type.add_required_element(
+                                name, f"Dict[str, {nested.name}]"
+                            )
+                        complex_types.append(nested.name)
+                    else:
+                        """Map is of a primitive type"""
+                        if not values_type in prim_to_type.keys():
+                            values_type_name = "".join(
+                                word[0].upper() + word[1:]
+                                for word in values_type.split(".")
+                            )
+                            array_type = (
+                                values_type_name
+                                if values_type_name in complex_types
+                                else prim_to_type[values_type]
+                            )
+                        else:
+                            array_type = prim_to_type[values_type]
+                        if is_nullable(field):
+                            our_type.add_optional_element(
+                                name, f"Dict[str, {array_type}]"
+                            )
+                            imports["typing"].add(OPTIONAL)
+                        else:
+                            our_type.add_required_element(
+                                name, f"Dict[str, {array_type}]"
+                            )
+                    imports["typing"].add(DICT)
+                # fixed
+                elif field_type_is_of_type(field[TYPE], AvroSubType.FIXED.value):
+                    """Fixed types are simply represented as bytes. The size
+                    field is ignored because size checking is not possible with
+                    Python typing."""
+                    if is_nullable(field):
+                        our_type.add_optional_element(name, "bytes")
+                        imports["typing"].add(OPTIONAL)
+                    else:
+                        our_type.add_required_element(name, "bytes")
                 # primitive
                 else:
                     """Ths section process a primitive type or a named complex type."""
@@ -328,7 +397,7 @@ def types_for_schema(schema):
                         reference_type = prim_to_type[field_type]
                     if is_nullable(field):
                         our_type.add_optional_element(name, reference_type)
-                        import_flags[OPTIONAL] = True
+                        imports["typing"].add(OPTIONAL)
                     else:
                         our_type.add_required_element(name, reference_type)
         except Exception as e:
@@ -341,31 +410,25 @@ def types_for_schema(schema):
             )
         return our_type
 
-    imports = []
+    imports = defaultdict(set)
+    imports["typing"].add("TypedDict")
     enums = {}
     complex_types = []
-    import_flags = {OPTIONAL: False, LIST: False}
-    main_type = type_for_schema_record(
-        schema, imports, enums, complex_types, import_flags
-    )
+    main_type = type_for_schema_record(schema, imports, enums, complex_types)
 
-    additional_types = []
-    # import the Optional type only if required
-    if import_flags[OPTIONAL]:
-        additional_types.append(OPTIONAL)
-    if import_flags[LIST]:
-        additional_types.append(LIST)
-    additional_types.append("TypedDict")
-    additional_types_as_str = ", ".join(additional_types)
-
-    imports.append(f"from typing import {additional_types_as_str}\n")
+    import_lines = []
+    for module, classes in imports.items():
+        classes = ", ".join(sorted(classes))
+        import_lines.append(f"from {module} import {classes}")
+    import_code = "\n".join(sorted(import_lines))
 
     body.append(main_type.tree)
-    imports = sorted(list(set(imports)))
-    generated_code = (
-        "".join(imports) + resolve_enum_str(enums) + ast.unparse(_dedupe_ast(tree).body)
+
+    generated_code = "\n".join(
+        [import_code, resolve_enum_str(enums), ast.unparse(_dedupe_ast(tree).body)]
     )
-    formatted_code = black.format_str(generated_code, mode=black.FileMode())
+
+    formatted_code = black.format_str(generated_code, mode=black.Mode())
     return formatted_code
 
 

@@ -8,7 +8,7 @@ from snapshottest import Snapshot
 snapshots = Snapshot()
 
 snapshots['SnapshotTypedDictArrayFromSchemaFile::test_array_map_schemas com.wave.Order.avsc'] = '''from enum import Enum
-from typing import Optional, List, TypedDict
+from typing import List, Optional, TypedDict
 
 
 class ComWaveProduct_status(Enum):
@@ -41,7 +41,7 @@ class ComWaveOrder(TypedDict, total=False):
 '''
 
 snapshots['SnapshotTypedDictArrayFromSchemaFile::test_array_map_schemas com.wave.OrderDetail.avsc'] = '''from enum import Enum
-from typing import Optional, List, TypedDict
+from typing import List, Optional, TypedDict
 
 
 class ComWaveProduct_status(Enum):
@@ -67,7 +67,7 @@ class ComWaveOrderDetail(TypedDict, total=False):
 '''
 
 snapshots['SnapshotTypedDictArrayFromSchemaFile::test_array_map_schemas com.wave.Product.avsc'] = '''from enum import Enum
-from typing import Optional, List, TypedDict
+from typing import List, Optional, TypedDict
 
 
 class ComWaveProduct_status(Enum):
@@ -95,9 +95,7 @@ class CommonChildA(TypedDict, total=False):
     favorite_color: Optional[str]
 '''
 
-snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas common.ChildB.avsc'] = '''from datetime import date
-from datetime import datetime
-from datetime import time
+snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas common.ChildB.avsc'] = '''from datetime import date, datetime, time
 from decimal import Decimal
 from typing import TypedDict
 from uuid import UUID
@@ -114,9 +112,7 @@ class CommonChildB(TypedDict, total=False):
     weight: Decimal
 '''
 
-snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas common.ChildC.avsc'] = '''from datetime import date
-from datetime import datetime
-from datetime import time
+snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas common.ChildC.avsc'] = '''from datetime import date, datetime, time
 from decimal import Decimal
 from enum import Enum
 from typing import Optional, TypedDict
@@ -150,9 +146,7 @@ class CommonChildC(TypedDict, total=False):
     eye_color: Optional[CommonEyeColor]
 '''
 
-snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas domain.Parent.avsc'] = '''from datetime import date
-from datetime import datetime
-from datetime import time
+snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_expandable_schemas domain.Parent.avsc'] = '''from datetime import date, datetime, time
 from decimal import Decimal
 from typing import Optional, TypedDict
 from uuid import UUID
@@ -188,7 +182,7 @@ class DomainParent(TypedDict, total=False):
 '''
 
 snapshots['SnapshotTypedDictFromSchemaFile::test_snapshot_schema_references com.wave.Order.avsc'] = '''from enum import Enum
-from typing import Optional, List, TypedDict
+from typing import List, Optional, TypedDict
 
 
 class ComWaveProduct_status(Enum):
@@ -356,4 +350,31 @@ snapshots['SnapshotTypedDictFromSchemaString::test_snapshot_all_schemas no_optio
 
 class ExampleAvroAnotherExample(TypedDict, total=False):
     id: str
+'''
+
+snapshots['SnapshotTypedDictMapAndFixedFromSchemaFile::test_array_map_schemas org.apache.avro.ipc.HandshakeRequest.avsc'] = '''from typing import Dict, Optional, TypedDict
+
+
+class OrgApacheAvroIpcHandshakeRequest(TypedDict, total=False):
+    clientHash: bytes
+    clientProtocol: Optional[str]
+    serverHash: bytes
+    meta: Optional[Dict[str, bytes]]
+'''
+
+snapshots['SnapshotTypedDictMapAndFixedFromSchemaFile::test_array_map_schemas org.apache.avro.ipc.HandshakeResponse.avsc'] = '''from enum import Enum
+from typing import Dict, Optional, TypedDict
+
+
+class OrgApacheAvroIpcHandshakeMatch(Enum):
+    BOTH = "BOTH"
+    CLIENT = "CLIENT"
+    NONE = "NONE"
+
+
+class OrgApacheAvroIpcHandshakeResponse(TypedDict, total=False):
+    match: OrgApacheAvroIpcHandshakeMatch
+    serverProtocol: Optional[str]
+    serverHash: Optional[bytes]
+    meta: Optional[Dict[str, bytes]]
 '''
