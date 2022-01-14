@@ -1,5 +1,10 @@
 # Changelog
   
+## 0.12.1
+### Fixed
+- Updated dependencies to address undefined dll symbol _PyUnicode_DecodeUnicodeEscape
+- Added ability to test in docker.
+  
 ## 0.12.0
 ### Added
 - Support for the "map" and "fixed" avro types.
