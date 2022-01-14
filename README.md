@@ -117,6 +117,8 @@ class ExampleUser(TypedDict, total=False):
 
 To run unit tests, run `poetry run pytest`.
 
+You can also run tests in docker via `make test`
+
 ## Requirements
 
 Python 3.9 or greater.
