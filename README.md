@@ -4,6 +4,12 @@ A library for converting avro schemas to python types.
 
 Currently, it supports converting `record`s to `TypedDict`. If you would like to see more features added, please open up an issue.
 
+# Updating dependencies
+
+The makefile target `update_poetry_lock` will (providing that the existing lock file is valid) launch 
+container and update the dependencies there.  This target is provided because sometimes doing it on your MAC 
+is problematic.
+
 ## Why would I want this?
 
 This library is targeted to people writing code generation for python apps that are using [avro](https://avro.apache.org/docs/current/spec.html).
