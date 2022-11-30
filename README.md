@@ -6,9 +6,8 @@ Currently, it supports converting `record`s to `TypedDict`. If you would like to
 
 # Updating dependencies
 
-The makefile target `update_poetry_lock` will (providing that the existing lock file is valid) launch 
-container and update the dependencies there.  This target is provided because sometimes doing it on your MAC 
-is problematic.
+The makefile target `update_poetry` will open a shell in app's container.  From there you can issue poetry commands to update the project
+and lock files.  Use this if running poetry from the workstation doesn't work.
 
 ## Why would I want this?
 
