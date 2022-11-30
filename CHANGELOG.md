@@ -2,8 +2,7 @@
   
 ## 0.12.2
 ### Changed
-- Relocated the black package from dev to lib cause its actually used there
-- Tested with python 3.10
+- Tested and now supported with python 3.10
 
 ## 0.12.1
 ### Fixed

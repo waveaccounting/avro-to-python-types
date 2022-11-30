@@ -31,11 +31,11 @@ exclude = '''
 [tool.poetry.dependencies]
 python = "^3.8"
 fastavro = "^1.4"
-black = "^21.10b0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.0"
 snapshottest = "^0.6.0"
+black = "^21.10b0"
 debugpy = "^1.5.1"
 
 [tool.poetry.scripts]
