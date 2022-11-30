@@ -11,11 +11,10 @@ COPY pyproject.toml poetry.lock /app/
 
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
   git vim iputils-ping curl \
-  && pip install "poetry>=1.1.11" "pytest>=1.7.0" "debugpy>=1.6.0" \
-  "snapshottest>=0.6.0" \
+  && pip install "poetry>=1.1.11" \
   && poetry config experimental.new-installer false \
   && poetry config virtualenvs.create false \
-  && poetry install --no-dev --no-root
+  && poetry install --no-root
 
 
 ENV PYTHONPATH=/app
