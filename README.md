@@ -116,8 +116,9 @@ class ExampleUser(TypedDict, total=False):
 ## Testing
 
 To run unit tests, run `poetry run pytest`.
-
-You can also run tests in docker via `make test`
+You can run tests in docker via `make test`
+You can run the tests in a debugger via `make test_debug` 
+and then connect to port 9009 with your IDE's debugger.
 
 ## Requirements
 

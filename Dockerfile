@@ -15,7 +15,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
   "snapshottest>=0.6.0" \
   && poetry config experimental.new-installer false \
   && poetry config virtualenvs.create false \
-  && poetry install --no-root
+  && poetry install --no-dev --no-root
 
 
 ENV PYTHONPATH=/app
