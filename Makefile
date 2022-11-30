@@ -13,6 +13,12 @@ test: build ## Build docker image
 		-v /$(PWD):/app \
 		avro-to-python-types 
 	
+.PHONY: update_poetry_lock
+update_poetry_lock: build ## Build docker image
+	docker run -t --rm \
+		-v /$(PWD):/app \
+		--entrypoint=poetry \
+		avro-to-python-types update 
 
 .PHONY: test_debug 
 test_debug: build ## Build docker image

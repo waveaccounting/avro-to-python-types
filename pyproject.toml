@@ -30,13 +30,9 @@ exclude = '''
 
 [tool.poetry.dependencies]
 python = "^3.8"
-fastavro = "^1.4.4"
+fastavro = "^1.4"
+black = "^22.0"
 
-[tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
-snapshottest = "^0.6.0"
-black = "^20.8b1"
-debugpy = "^1.5.1"
 
 [tool.poetry.scripts]
 sync-example = 'examples:generate_types_from_schemas'
