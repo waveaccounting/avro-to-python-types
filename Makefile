@@ -14,7 +14,7 @@ test: build ## Build docker image
 		avro-to-python-types 
 	
 .PHONY: update_poetry
-update_poetry_lock: build ## Update poetry from inside the continer
+update_poetry: build ## Update poetry from inside the continer
 	docker run -ti --rm \
 		-v /$(PWD):/app \
 		--entrypoint=bash \
